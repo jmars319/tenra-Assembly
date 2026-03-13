@@ -1,0 +1,23 @@
+{
+  "name": "@assembly/domain",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./audit": "./src/audit.ts",
+    "./content": "./src/content.ts",
+    "./content/parsers": "./src/content/parsers.ts",
+    "./content/validators": "./src/content/validators.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@assembly/shared-types": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}

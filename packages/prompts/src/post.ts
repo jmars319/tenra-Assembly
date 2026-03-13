@@ -1,0 +1,16 @@
+export const platformPromptInstructions = {
+  twitter: "Write a concise post suited for X (Twitter). Keep it under 280 characters.",
+  instagram: "Write a short caption suited for Instagram. Keep it punchy and readable.",
+  linkedin: "Write a professional LinkedIn update. Keep it clear and pragmatic.",
+  facebook: "Write a friendly Facebook update. Keep it conversational and clear.",
+  gbp: "Write a short Google Business Profile update. Keep it direct and locally relevant.",
+  youtube: "Write a YouTube Community post. Keep it short, friendly, and clear.",
+  threads: "Write a Threads post. Keep it short and conversational.",
+  tiktok: "Write a short TikTok caption. Keep it punchy and informal.",
+  mastodon: "Write a Mastodon post. Keep it concise and informative.",
+  bluesky: "Write a Bluesky post. Keep it concise and conversational.",
+  reddit: "Write a Reddit post. Keep it informative with a straightforward tone.",
+  pinterest: "Write a Pinterest caption. Keep it short and descriptive.",
+  snapchat: "Write a Snapchat caption. Keep it casual and very short.",
+  generic: "Write a concise social post.",
+} as const;

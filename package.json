@@ -1,53 +1,47 @@
 {
-  "name": "ledger",
-  "version": "0.1.0",
+  "name": "assembly",
   "private": true,
-  "scripts": {
-    "dev": "NEXT_DISABLE_TURBOPACK=1 next dev . --webpack",
-    "dev:turbo": "node ./scripts/check-turbopack-root.mjs && next dev . --turbo",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "typecheck": "tsc --noEmit",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:status": "prisma migrate status",
-    "prisma:validate": "prisma validate",
-    "db:smoke": "node ./scripts/db-smoke-check.mjs",
-    "db:seed": "node ./scripts/seed-dev-data.mjs",
-    "content:seed": "node ./scripts/seed-content-dev-data.mjs",
-    "content:smoke": "node ./scripts/content-smoke-check.mjs",
-    "ai:smoke": "tsx ./scripts/ai-instructions-smoke.ts",
-    "github:smoke": "node ./scripts/github-smoke-check.mjs",
-    "github:env": "node ./scripts/print-github-env-template.mjs"
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=22.21.1 <23",
+    "pnpm": ">=10.32.1 <11"
   },
-  "dependencies": {
-    "@prisma/adapter-pg": "^7.2.0",
-    "@prisma/client": "^7.2.0",
-    "bcryptjs": "^2.4.3",
-    "jose": "^5.9.3",
-    "mammoth": "^1.8.0",
-    "next": "16.1.1",
-    "openai": "^6.16.0",
-    "pdf-parse": "^1.1.1",
-    "pg": "^8.16.3",
-    "react": "19.2.3",
-    "react-dom": "19.2.3"
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/engines",
+      "esbuild",
+      "prisma",
+      "sharp",
+      "unrs-resolver"
+    ]
+  },
+  "scripts": {
+    "bootstrap": "bash ./scripts/bootstrap.sh",
+    "check:env": "bash ./scripts/check-env-links.sh",
+    "check:packages": "bash ./scripts/check-packages.sh",
+    "dev:web": "bash ./scripts/dev-web.sh",
+    "dev:both": "bash ./scripts/dev-both.sh",
+    "build:web": "pnpm --filter webapp build",
+    "dev:desktop": "bash ./scripts/dev-desktop.sh",
+    "build:desktop": "pnpm --filter desktopapp tauri build",
+    "lint": "pnpm --filter webapp lint && pnpm exec eslint --no-error-on-unmatched-pattern \"apps/desktopapp/**/*.{ts,tsx}\" \"apps/desktopapp/*.ts\" \"packages/**/*.{ts,tsx}\" \"scripts/**/*.{js,mjs,cjs,ts,mts,cts}\" eslint.config.mjs",
+    "typecheck": "pnpm -r typecheck",
+    "typecheck:web": "pnpm --filter @assembly/shared-types typecheck && pnpm --filter @assembly/domain typecheck && pnpm --filter @assembly/prompts typecheck && pnpm --filter webapp typecheck",
+    "typecheck:desktop": "pnpm --filter @assembly/shared-types typecheck && pnpm --filter @assembly/domain typecheck && pnpm --filter @assembly/prompts typecheck && pnpm --filter desktopapp typecheck",
+    "verify:web": "bash ./scripts/verify-web.sh",
+    "verify:desktop": "bash ./scripts/verify-desktop.sh",
+    "verify:all": "bash ./scripts/verify-all.sh",
+    "doctor": "bash ./scripts/doctor.sh",
+    "prisma:generate:web": "pnpm --filter webapp prisma:generate",
+    "prisma:validate:web": "pnpm --filter webapp prisma:validate"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/node": "^20",
-    "@types/pdf-parse": "^1.1.5",
-    "@types/pg": "^8.11.10",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "dotenv": "^16.4.5",
-    "eslint": "^9",
+    "@eslint/js": "^9.39.2",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.2",
     "eslint-config-next": "16.1.1",
-    "prisma": "^7.2.0",
-    "tailwindcss": "^4",
-    "tsx": "^4.19.2",
-    "typescript": "^5"
+    "globals": "^14.0.0",
+    "tsx": "^4.21.0",
+    "typescript-eslint": "^8.52.0"
   }
 }
