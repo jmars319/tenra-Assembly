@@ -13,6 +13,7 @@ import {
 } from "@assembly/shared-types/content";
 import { getStylePreset, stylePresets } from "@assembly/shared-types/style";
 import { loadDesktopShellStatus, type DesktopShellStatus } from "./lib/commands";
+import { readDesktopStore, writeDesktopStore } from "./lib/desktopStore";
 import "./App.css";
 
 type AssemblyItem = {
@@ -186,16 +187,7 @@ const promotionIssuesForItem = (item: AssemblyItem) =>
   });
 
 const loadItems = () => {
-  if (typeof window === "undefined") return [newItem()];
-
-  try {
-    const raw = window.localStorage.getItem(storageKey);
-    if (!raw) return [newItem()];
-    const parsed = JSON.parse(raw) as AssemblyItem[];
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : [newItem()];
-  } catch {
-    return [newItem()];
-  }
+  return [newItem()];
 };
 
 const formatShortDate = (iso: string) =>
@@ -242,10 +234,41 @@ function App() {
   const [shellStatus, setShellStatus] = useState<DesktopShellStatus | null>(null);
   const [shellError, setShellError] = useState<string | null>(null);
   const [notice, setNotice] = useState("Local desktop workbench ready.");
+  const [isStoreReady, setIsStoreReady] = useState(false);
 
   useEffect(() => {
-    window.localStorage.setItem(storageKey, JSON.stringify(items));
-  }, [items]);
+    let cancelled = false;
+
+    readDesktopStore<AssemblyItem[]>(storageKey)
+      .then((storedItems) => {
+        if (cancelled) return;
+
+        if (Array.isArray(storedItems) && storedItems.length > 0) {
+          setItems(storedItems);
+          setActiveId(storedItems[0]?.id ?? "");
+          setNotice("Desktop store loaded.");
+        }
+
+        setIsStoreReady(true);
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return;
+        setNotice(error instanceof Error ? error.message : "Desktop store unavailable.");
+        setIsStoreReady(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isStoreReady) return;
+
+    void writeDesktopStore(storageKey, items).catch((error: unknown) => {
+      setNotice(error instanceof Error ? error.message : "Desktop store write failed.");
+    });
+  }, [isStoreReady, items]);
 
   useEffect(() => {
     let cancelled = false;
