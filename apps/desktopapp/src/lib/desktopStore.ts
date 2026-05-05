@@ -61,3 +61,14 @@ export const writeDesktopStore = async <T>(key: string, value: T): Promise<void>
     transaction.onerror = () => reject(transaction.error ?? new Error("Desktop store write failed."));
   });
 };
+
+export const readLegacyLocalStorage = <T>(key: string): T | null => {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const raw = window.localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : null;
+  } catch {
+    return null;
+  }
+};

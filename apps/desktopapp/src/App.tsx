@@ -13,7 +13,7 @@ import {
 } from "@assembly/shared-types/content";
 import { getStylePreset, stylePresets } from "@assembly/shared-types/style";
 import { loadDesktopShellStatus, type DesktopShellStatus } from "./lib/commands";
-import { readDesktopStore, writeDesktopStore } from "./lib/desktopStore";
+import { readDesktopStore, readLegacyLocalStorage, writeDesktopStore } from "./lib/desktopStore";
 import "./App.css";
 
 type AssemblyItem = {
@@ -243,10 +243,18 @@ function App() {
       .then((storedItems) => {
         if (cancelled) return;
 
-        if (Array.isArray(storedItems) && storedItems.length > 0) {
-          setItems(storedItems);
-          setActiveId(storedItems[0]?.id ?? "");
-          setNotice("Desktop store loaded.");
+        const legacyItems = readLegacyLocalStorage<AssemblyItem[]>(storageKey);
+        const nextItems =
+          Array.isArray(storedItems) && storedItems.length > 0
+            ? storedItems
+            : Array.isArray(legacyItems) && legacyItems.length > 0
+              ? legacyItems
+              : null;
+
+        if (nextItems) {
+          setItems(nextItems);
+          setActiveId(nextItems[0]?.id ?? "");
+          setNotice(storedItems ? "Desktop store loaded." : "Legacy workbench records migrated.");
         }
 
         setIsStoreReady(true);
