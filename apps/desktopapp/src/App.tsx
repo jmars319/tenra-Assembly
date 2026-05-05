@@ -30,6 +30,7 @@ type AssemblyItem = {
 };
 
 type SidebarFilter = "active" | "approved" | "all";
+type HandoffKind = "scout" | "registry" | "derive";
 
 const storageKey = "tenra-assembly-desktop-workbench:v1";
 
@@ -88,6 +89,52 @@ const statusLabels: Record<ContentStatus, string> = {
   APPROVED: "Approved",
   REJECTED: "Rejected",
   ARCHIVED: "Archived",
+};
+
+const handoffTemplates: Record<
+  HandoffKind,
+  {
+    label: string;
+    source: string;
+    title: string;
+    type: ContentType;
+    rawInput: string;
+  }
+> = {
+  scout: {
+    label: "Scout evidence pack",
+    source: "tenra Scout handoff",
+    title: "Scout opportunity brief",
+    type: "SIGNAL_LOG",
+    rawInput:
+      "date: 2026-05-05\n" +
+      "signal: Paste the lead name, market, audit findings, screenshots, and opportunity classification.\n" +
+      "tags: scout, lead, evidence\n" +
+      "link:"
+  },
+  registry: {
+    label: "Registry document request",
+    source: "tenra Registry handoff",
+    title: "Registry customer document",
+    type: "PROJECT_NOTE",
+    rawInput:
+      "case_study_slug: registry-customer-document\n" +
+      "date: 2026-05-05\n" +
+      "metric: customer paperwork\n" +
+      "detail: Paste the customer, rental, unit, balance, and requested document details.\n" +
+      "source_link:"
+  },
+  derive: {
+    label: "Derive answer card",
+    source: "tenra Derive handoff",
+    title: "Derive reasoning brief",
+    type: "DECISION_RECORD",
+    rawInput:
+      "context: Paste the Derive question, answer, assumptions, sources, and confidence.\n" +
+      "decision: State what Assembly should turn this into.\n" +
+      "tradeoffs: Note what needs review before publishing or sending.\n" +
+      "outcome: Define the draft, document, or task to produce."
+  }
 };
 
 const createId = () =>
@@ -338,6 +385,26 @@ function App() {
     setNotice("New draft created.");
   };
 
+  const createHandoffItem = (kind: HandoffKind) => {
+    const template = handoffTemplates[kind];
+    const now = nowIso();
+    const item: AssemblyItem = {
+      id: createId(),
+      title: template.title,
+      type: template.type,
+      styleId: stylePresets[0]?.id ?? "neutral-brief",
+      source: template.source,
+      rawInput: template.rawInput,
+      status: "DRAFT",
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    setItems((current) => [item, ...current]);
+    setActiveId(item.id);
+    setNotice(`${template.label} draft created.`);
+  };
+
   const applyTemplate = () => {
     updateActiveItem({ rawInput: templates[activeItem.type], status: "DRAFT" });
     setNotice(`${typeLabels[activeItem.type]} template applied.`);
@@ -424,6 +491,17 @@ function App() {
             <option value="all">All</option>
           </select>
         </div>
+
+        <section className="handoffPanel" aria-label="Suite handoff starters">
+          <span className="brandTag">Suite handoffs</span>
+          <div className="handoffList">
+            {(Object.keys(handoffTemplates) as HandoffKind[]).map((kind) => (
+              <button key={kind} type="button" onClick={() => createHandoffItem(kind)}>
+                {handoffTemplates[kind].label}
+              </button>
+            ))}
+          </div>
+        </section>
 
         <nav className="itemList" aria-label="Assembly items">
           {visibleItems.map((item) => (
