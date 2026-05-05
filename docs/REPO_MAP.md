@@ -5,7 +5,7 @@ tenra Assembly is a pnpm monorepo with two app targets and a small shared core.
 ## Top-level folders
 
 - `apps/webapp`: the fuller Next.js implementation, including auth, Prisma access, API handlers, and current product behavior
-- `apps/desktopapp`: the Tauri + Rust + React/Vite desktop shell
+- `apps/desktopapp`: the Tauri + Rust + React/Vite desktop workbench
 - `packages/shared-types`: reusable enums, DTOs, style presets, and workspace feature shapes
 - `packages/domain`: reusable validation, parsing, and audit-display helpers
 - `packages/prompts`: reusable prompt/instruction composition
@@ -29,11 +29,12 @@ Still web-only:
 - GitHub App install and sync flows
 - hosted deployment concerns
 
-## Why desktop is still a shell
+## Current desktop role
 
-- The desktop app is intentionally not feature-parity yet.
-- It exists to stabilize Tauri/Rust boundaries and consume shared logic safely.
-- The webapp remains the authoritative implementation while desktop-first local ownership is still deferred.
+- The desktop app is intentionally not feature-parity with the webapp yet.
+- It provides local manual content drafts, content-type templates, shared validation, approval state, and Markdown export.
+- It still exists to stabilize Tauri/Rust boundaries and consume shared logic safely.
+- The webapp remains authoritative for auth, Prisma-backed workflows, GitHub App integration, and hosted deployment.
 
 ## Temporary webapp shim files
 

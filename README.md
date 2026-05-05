@@ -1,6 +1,6 @@
 # tenra Assembly Monorepo
 
-tenra Assembly is a desktop-first tool for AI-assisted, human-approved content production. This repo keeps the existing web app fully functional while preparing the Tauri desktop client to become the future primary surface.
+tenra Assembly is a desktop-first tool for AI-assisted, human-approved content production. This repo keeps the existing web app fully functional while giving the Tauri desktop client a practical local content workbench.
 
 Start here:
 - `docs/SYSTEM_OVERVIEW.md`
@@ -14,7 +14,7 @@ Start here:
 ```text
 apps/
   webapp/       Existing Next.js + Prisma implementation
-  desktopapp/   Tauri + Rust + React/Vite shell
+  desktopapp/   Tauri + Rust + React/Vite local workbench
 
 packages/
   shared-types/ Reusable enums, DTOs, presets, and feature keys
@@ -24,7 +24,7 @@ packages/
 
 What belongs where:
 - `apps/webapp`: current full product behavior, auth, Prisma, API routes, and hosted-web concerns
-- `apps/desktopapp`: desktop shell, Tauri/Rust boundary work, and shared-package consumption
+- `apps/desktopapp`: local draft, review, approval, export, Tauri/Rust boundary work, and shared-package consumption
 - `packages/*`: low-risk shared logic that both app targets can consume safely
 
 ## Canonical commands
@@ -73,13 +73,13 @@ Notes:
 
 ## Current product split
 
-- `apps/webapp` remains the fuller implementation today.
-- `apps/desktopapp` is the future-primary client, but is still a shell plus shared-logic consumer.
+- `apps/webapp` remains the fuller cloud-backed implementation today.
+- `apps/desktopapp` is a usable local desktop workbench for manual content items, review gates, approvals, and Markdown export.
 - `packages/*` hold the shared core that both targets can reuse now.
 
 When to use each app:
 - Use `webapp` for auth, Prisma-backed flows, API work, and the current end-to-end product.
-- Use `desktopapp` for shell work, Rust/Tauri boundary work, and future local-first ownership.
+- Use `desktopapp` for local drafting, reusable content templates, validation, approval state, export, Rust/Tauri boundary work, and future local-first ownership.
 
 ## Environment and compatibility names
 

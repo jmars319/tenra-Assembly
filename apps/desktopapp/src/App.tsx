@@ -1,128 +1,262 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getPromotionIssuesForItem } from "@assembly/domain/content";
-import { GLOBAL_HARD_RULES } from "@assembly/prompts/instructions";
-import { contentTypes } from "@assembly/shared-types/content";
-import { stylePresets } from "@assembly/shared-types/style";
+import { buildInstructionBlock } from "@assembly/prompts/instructions";
+import {
+  contentTypes,
+  type ChangeLogEntry,
+  type ContentStatus,
+  type ContentType,
+  type DecisionRecord,
+  type ProjectNoteRow,
+  type SignalLogEntry,
+  type ValidationIssue,
+} from "@assembly/shared-types/content";
+import { getStylePreset, stylePresets } from "@assembly/shared-types/style";
 import { loadDesktopShellStatus, type DesktopShellStatus } from "./lib/commands";
 import "./App.css";
 
-type NavKey = "dashboard" | "content" | "briefs" | "assemblies" | "schedules" | "settings";
+type AssemblyItem = {
+  id: string;
+  title: string;
+  type: ContentType;
+  styleId: string;
+  source: string;
+  rawInput: string;
+  status: ContentStatus;
+  createdAt: string;
+  updatedAt: string;
+  approvedAt?: string;
+};
 
-const navItems: Array<{ key: NavKey; label: string; kicker: string }> = [
-  { key: "dashboard", label: "Dashboard", kicker: "Shell status" },
-  { key: "content", label: "Content", kicker: "Shared types" },
-  { key: "briefs", label: "Briefs", kicker: "Human review" },
-  { key: "assemblies", label: "Assemblies / Drafts", kicker: "Primary workspace" },
-  { key: "schedules", label: "Schedules", kicker: "Approval routing" },
-  { key: "settings", label: "Settings", kicker: "Local-first setup" },
-];
+type SidebarFilter = "active" | "approved" | "all";
 
-const formatEnumLabel = (value: string) =>
-  value
-    .toLowerCase()
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
+const storageKey = "tenra-assembly-desktop-workbench:v1";
 
-const fieldNotePromotionIssues = getPromotionIssuesForItem({
-  type: "FIELD_NOTE",
-  rawInput: "- Desktop workspace prepared\n- Shared packages extracted",
-});
+const templates: Record<ContentType, string> = {
+  FIELD_NOTE: "- What happened\n- Why it matters\n- Follow-up or next action",
+  PROJECT_NOTE:
+    "case_study_slug: internal-project\n" +
+    "date: 2026-05-05\n" +
+    "metric: workflow update\n" +
+    "detail: Describe the useful change or observation.\n" +
+    "source_link:",
+  SYSTEMS_MEMO:
+    "Thesis: State the main point.\n\n" +
+    "Points:\n" +
+    "- First supporting point\n" +
+    "- Second supporting point\n" +
+    "- Third supporting point\n\n" +
+    "Example: Add a concrete example.\n\n" +
+    "Takeaway: State the decision or implication.",
+  BLOG_FEATURE:
+    "---\n" +
+    "title: Working title\n" +
+    "primary_keyword: target keyword\n" +
+    "related_keywords:\n" +
+    "  - related term\n" +
+    "---\n\n" +
+    "Write the article body here. Keep claims concrete and reviewable.",
+  CHANGE_LOG:
+    "date: 2026-05-05\n" +
+    "change: Describe what changed.\n" +
+    "impact: Describe why it matters.",
+  DECISION_RECORD:
+    "context: What situation required a decision?\n" +
+    "decision: What was decided?\n" +
+    "tradeoffs: What was gained or given up?\n" +
+    "outcome: What should happen next?",
+  SIGNAL_LOG:
+    "date: 2026-05-05\n" +
+    "signal: Describe the observation.\n" +
+    "tags: market, product, risk",
+};
 
-const sectionCopy: Record<
-  NavKey,
-  {
-    eyebrow: string;
-    title: string;
-    description: string;
-    focusItems: string[];
+const typeLabels: Record<ContentType, string> = {
+  FIELD_NOTE: "Field note",
+  PROJECT_NOTE: "Project note",
+  SYSTEMS_MEMO: "Systems memo",
+  BLOG_FEATURE: "Blog feature",
+  CHANGE_LOG: "Change log",
+  DECISION_RECORD: "Decision record",
+  SIGNAL_LOG: "Signal log",
+};
+
+const statusLabels: Record<ContentStatus, string> = {
+  DRAFT: "Draft",
+  READY: "Ready",
+  APPROVED: "Approved",
+  REJECTED: "Rejected",
+  ARCHIVED: "Archived",
+};
+
+const createId = () =>
+  typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `assembly-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+const nowIso = () => new Date().toISOString();
+
+const newItem = (): AssemblyItem => {
+  const now = nowIso();
+
+  return {
+    id: createId(),
+    title: "Untitled field note",
+    type: "FIELD_NOTE",
+    styleId: stylePresets[0]?.id ?? "neutral-brief",
+    source: "Manual desktop entry",
+    rawInput: templates.FIELD_NOTE,
+    status: "DRAFT",
+    createdAt: now,
+    updatedAt: now,
+  };
+};
+
+const normalizeKey = (key: string) => key.trim().toLowerCase().replace(/[\s-]+/g, "_");
+
+const parseKeyValueDraft = (text: string) => {
+  const values: Record<string, string> = {};
+
+  for (const line of text.split(/\r?\n/)) {
+    const separator = line.indexOf(":");
+    if (separator === -1) continue;
+    const key = normalizeKey(line.slice(0, separator));
+    const value = line.slice(separator + 1).trim();
+    if (key) values[key] = value;
   }
-> = {
-  dashboard: {
-    eyebrow: "Desktop-first foundation",
-    title: "Assembly is ready to grow past the browser without abandoning the web app.",
-    description:
-      "The desktop client now shares the core content model while the existing web app remains the full implementation.",
-    focusItems: [
-      "Use the current web app as the functional reference implementation.",
-      "Keep approvals and editorial review flows in the frontend.",
-      "Move secure local concerns into Rust as features become real.",
-    ],
-  },
-  content: {
-    eyebrow: "Shared content model",
-    title: "Content intake and promotion rules can already be reused outside Next.js.",
-    description:
-      "The desktop workspace reads shared content types and validators directly from workspace packages.",
-    focusItems: [
-      "Content types come from @assembly/shared-types.",
-      "Promotion checks come from @assembly/domain.",
-      "The current sample intentionally fails strict promotion until a third bullet exists.",
-    ],
-  },
-  briefs: {
-    eyebrow: "Brief flow",
-    title: "Briefs stay human-approved and reusable as context blocks.",
-    description:
-      "Desktop marks the screen boundary where repo evidence, prompt composition, and review will converge.",
-    focusItems: [
-      "Prompt layering already lives in @assembly/prompts.",
-      "Repo evidence capture remains web-only for now.",
-      "The future desktop brief view should connect local context to cloud-backed evidence carefully.",
-    ],
-  },
-  assemblies: {
-    eyebrow: "Primary workspace",
-    title: "Assemblies / Drafts is positioned to become the primary desktop workbench.",
-    description:
-      "This surface is where local persistence, approvals, and editor state should converge once the desktop client starts owning more of the production workflow.",
-    focusItems: [
-      "Draft state should remain recoverable without network dependence.",
-      "Promotion should stay strict even when creation remains flexible.",
-      "Command handlers should expose explicit file and persistence operations.",
-    ],
-  },
-  schedules: {
-    eyebrow: "Operational view",
-    title: "Scheduling remains reviewable and intentionally separate from generation.",
-    description:
-      "The shell keeps scheduling as a dedicated surface so future background tasks and sync events can be added without overloading the editorial workspace.",
-    focusItems: [
-      "No auto-posting boundary changes in this pass.",
-      "Background work belongs behind Rust commands.",
-      "Cloud sync should be additive, not a prerequisite for local work.",
-    ],
-  },
-  settings: {
-    eyebrow: "Boundary notes",
-    title: "Settings should become the bridge between local storage, secrets, and workspace policy.",
-    description:
-      "The desktop client can already surface shared editorial presets and global hidden rules while leaving auth, Prisma, and web APIs in place until the local model is ready.",
-    focusItems: [
-      "Style presets are shared across web and desktop.",
-      "Global hidden rules remain centralized in @assembly/prompts.",
-      "Secure secret storage is explicitly deferred to Rust-owned code.",
-    ],
-  },
+
+  return values;
+};
+
+const structuredPayloadForItem = (item: AssemblyItem): unknown => {
+  const fields = parseKeyValueDraft(item.rawInput);
+
+  if (item.type === "PROJECT_NOTE") {
+    const row: ProjectNoteRow = {
+      caseStudySlug: fields.case_study_slug ?? "",
+      date: fields.date ?? "",
+      metric: fields.metric ?? "",
+      detail: fields.detail ?? "",
+      sourceLink: fields.source_link || null,
+    };
+    return row;
+  }
+
+  if (item.type === "CHANGE_LOG") {
+    const entry: ChangeLogEntry = {
+      date: fields.date ?? "",
+      change: fields.change ?? "",
+      impact: fields.impact ?? "",
+    };
+    return entry;
+  }
+
+  if (item.type === "DECISION_RECORD") {
+    const entry: DecisionRecord = {
+      context: fields.context ?? "",
+      decision: fields.decision ?? "",
+      tradeoffs: fields.tradeoffs ?? "",
+      outcome: fields.outcome ?? "",
+    };
+    return entry;
+  }
+
+  if (item.type === "SIGNAL_LOG") {
+    const entry: SignalLogEntry = {
+      date: fields.date ?? "",
+      signal: fields.signal ?? "",
+      tags: (fields.tags ?? "")
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean),
+      link: fields.link || null,
+    };
+    return entry;
+  }
+
+  return undefined;
+};
+
+const promotionIssuesForItem = (item: AssemblyItem) =>
+  getPromotionIssuesForItem({
+    type: item.type,
+    rawInput: item.rawInput,
+    structured: structuredPayloadForItem(item),
+    format: "md",
+  });
+
+const loadItems = () => {
+  if (typeof window === "undefined") return [newItem()];
+
+  try {
+    const raw = window.localStorage.getItem(storageKey);
+    if (!raw) return [newItem()];
+    const parsed = JSON.parse(raw) as AssemblyItem[];
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : [newItem()];
+  } catch {
+    return [newItem()];
+  }
+};
+
+const formatShortDate = (iso: string) =>
+  new Intl.DateTimeFormat(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(iso));
+
+const toMarkdown = (item: AssemblyItem) => {
+  const preset = getStylePreset(item.styleId);
+  const instructions = buildInstructionBlock({
+    style: preset,
+    context: [item.source],
+  });
+
+  return [
+    `# ${item.title || "Untitled"}`,
+    "",
+    `Status: ${statusLabels[item.status]}`,
+    `Type: ${typeLabels[item.type]}`,
+    `Style: ${preset.name}`,
+    `Source: ${item.source || "Manual desktop entry"}`,
+    `Updated: ${item.updatedAt}`,
+    item.approvedAt ? `Approved: ${item.approvedAt}` : null,
+    "",
+    "## Draft",
+    "",
+    item.rawInput.trim() || "(empty)",
+    "",
+    "## Instruction Pack",
+    "",
+    instructions.block,
+  ]
+    .filter((line) => line !== null)
+    .join("\n");
 };
 
 function App() {
-  const [activeKey, setActiveKey] = useState<NavKey>("dashboard");
+  const [items, setItems] = useState<AssemblyItem[]>(loadItems);
+  const [activeId, setActiveId] = useState(items[0]?.id ?? "");
+  const [filter, setFilter] = useState<SidebarFilter>("active");
   const [shellStatus, setShellStatus] = useState<DesktopShellStatus | null>(null);
   const [shellError, setShellError] = useState<string | null>(null);
+  const [notice, setNotice] = useState("Local desktop workbench ready.");
+
+  useEffect(() => {
+    window.localStorage.setItem(storageKey, JSON.stringify(items));
+  }, [items]);
 
   useEffect(() => {
     let cancelled = false;
 
     loadDesktopShellStatus()
       .then((nextStatus) => {
-        if (!cancelled) {
-          setShellStatus(nextStatus);
-        }
+        if (!cancelled) setShellStatus(nextStatus);
       })
       .catch((error: unknown) => {
         if (!cancelled) {
-          setShellError(error instanceof Error ? error.message : "Unknown Tauri command failure.");
+          setShellError(error instanceof Error ? error.message : "Tauri command failed.");
         }
       });
 
@@ -131,156 +265,294 @@ function App() {
     };
   }, []);
 
-  const activeSection = sectionCopy[activeKey];
+  const activeItem = items.find((item) => item.id === activeId) ?? items[0] ?? newItem();
+  const activeIssues = useMemo(() => promotionIssuesForItem(activeItem), [activeItem]);
+  const canPromote = activeIssues.length === 0;
+  const activePreset = getStylePreset(activeItem.styleId);
+  const markdown = useMemo(() => toMarkdown(activeItem), [activeItem]);
+  const counts = useMemo(
+    () => ({
+      draft: items.filter((item) => item.status === "DRAFT").length,
+      ready: items.filter((item) => item.status === "READY").length,
+      approved: items.filter((item) => item.status === "APPROVED").length,
+    }),
+    [items],
+  );
+
+  const visibleItems = items.filter((item) => {
+    if (filter === "all") return true;
+    if (filter === "approved") return item.status === "APPROVED";
+    return item.status !== "ARCHIVED";
+  });
+
+  const updateActiveItem = (updates: Partial<AssemblyItem>) => {
+    const updatedAt = nowIso();
+    setItems((current) =>
+      current.map((item) =>
+        item.id === activeItem.id
+          ? {
+              ...item,
+              ...updates,
+              updatedAt,
+            }
+          : item,
+      ),
+    );
+  };
+
+  const createItem = () => {
+    const item = newItem();
+    setItems((current) => [item, ...current]);
+    setActiveId(item.id);
+    setNotice("New draft created.");
+  };
+
+  const applyTemplate = () => {
+    updateActiveItem({ rawInput: templates[activeItem.type], status: "DRAFT" });
+    setNotice(`${typeLabels[activeItem.type]} template applied.`);
+  };
+
+  const markReady = () => {
+    if (!canPromote) {
+      setNotice("Fix the review issues before marking this ready.");
+      return;
+    }
+    updateActiveItem({ status: "READY" });
+    setNotice("Item marked ready for approval.");
+  };
+
+  const approveItem = () => {
+    if (!canPromote) {
+      setNotice("Fix the review issues before approving this item.");
+      return;
+    }
+    updateActiveItem({ status: "APPROVED", approvedAt: nowIso() });
+    setNotice("Item approved.");
+  };
+
+  const rejectItem = () => {
+    updateActiveItem({ status: "REJECTED" });
+    setNotice("Item moved to rejected.");
+  };
+
+  const copyMarkdown = async () => {
+    try {
+      await navigator.clipboard.writeText(markdown);
+      setNotice("Markdown copied.");
+    } catch {
+      setNotice("Clipboard copy failed. Export still works.");
+    }
+  };
+
+  const exportMarkdown = () => {
+    const slug = (activeItem.title || "assembly-item")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+    const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${slug || "assembly-item"}.md`;
+    link.click();
+    URL.revokeObjectURL(url);
+    setNotice("Markdown export created.");
+  };
 
   return (
     <div className="shell">
       <aside className="sidebar">
-        <div className="brandBlock">
+        <header className="brandBlock">
           <span className="brandTag">tenra Assembly</span>
-          <h1>Desktop workspace</h1>
-          <p>Desktop-first workspace for the primary Assembly experience.</p>
+          <h1>Content workbench</h1>
+          <p>Local drafts, review gates, approval state, and export.</p>
+        </header>
+
+        <div className="summaryGrid" aria-label="Content counts">
+          <div>
+            <strong>{counts.draft}</strong>
+            <span>Draft</span>
+          </div>
+          <div>
+            <strong>{counts.ready}</strong>
+            <span>Ready</span>
+          </div>
+          <div>
+            <strong>{counts.approved}</strong>
+            <span>Approved</span>
+          </div>
         </div>
 
-        <nav className="navList" aria-label="Primary">
-          {navItems.map((item) => (
+        <div className="toolbar">
+          <button type="button" onClick={createItem}>
+            New
+          </button>
+          <select value={filter} onChange={(event) => setFilter(event.target.value as SidebarFilter)}>
+            <option value="active">Active</option>
+            <option value="approved">Approved</option>
+            <option value="all">All</option>
+          </select>
+        </div>
+
+        <nav className="itemList" aria-label="Assembly items">
+          {visibleItems.map((item) => (
             <button
-              key={item.key}
-              className={item.key === activeKey ? "navItem navItemActive" : "navItem"}
-              onClick={() => setActiveKey(item.key)}
+              key={item.id}
+              className={item.id === activeItem.id ? "itemButton itemButtonActive" : "itemButton"}
+              onClick={() => setActiveId(item.id)}
               type="button"
             >
-              <span>{item.label}</span>
-              <small>{item.kicker}</small>
+              <span>{item.title || "Untitled"}</span>
+              <small>
+                {typeLabels[item.type]} / {statusLabels[item.status]}
+              </small>
             </button>
           ))}
         </nav>
 
-        <div className="sidebarNote">
-          <span className="noteLabel">Shared prompt rule</span>
-          <p>{GLOBAL_HARD_RULES[0]}</p>
-        </div>
+        <footer className="runtimeNote">
+          <strong>{shellStatus?.productName ?? "tenra Assembly"}</strong>
+          <span>{shellError ?? shellStatus?.mode ?? "desktop"}</span>
+        </footer>
       </aside>
 
       <main className="mainPanel">
-        <header className="hero">
-          <div>
-            <span className="eyebrow">{activeSection.eyebrow}</span>
-            <h2>{activeSection.title}</h2>
-            <p>{activeSection.description}</p>
+        <section className="editorPanel" aria-label="Content editor">
+          <header className="sectionHeader">
+            <div>
+              <span className="eyebrow">Draft</span>
+              <h2>{activeItem.title || "Untitled"}</h2>
+            </div>
+            <span className={`statusPill status${activeItem.status}`}>{statusLabels[activeItem.status]}</span>
+          </header>
+
+          <div className="formGrid">
+            <label>
+              Title
+              <input
+                value={activeItem.title}
+                onChange={(event) => updateActiveItem({ title: event.target.value })}
+                placeholder="Working title"
+              />
+            </label>
+
+            <label>
+              Type
+              <select
+                value={activeItem.type}
+                onChange={(event) => {
+                  const nextType = event.target.value as ContentType;
+                  updateActiveItem({
+                    type: nextType,
+                    rawInput: templates[nextType],
+                    status: "DRAFT",
+                  });
+                }}
+              >
+                {contentTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {typeLabels[type]}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label>
+              Style
+              <select value={activeItem.styleId} onChange={(event) => updateActiveItem({ styleId: event.target.value })}>
+                {stylePresets.map((preset) => (
+                  <option key={preset.id} value={preset.id}>
+                    {preset.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label>
+              Source or context
+              <input
+                value={activeItem.source}
+                onChange={(event) => updateActiveItem({ source: event.target.value })}
+                placeholder="Manual entry, repo note, meeting, Scout lead"
+              />
+            </label>
           </div>
 
-          <div className="statusCard">
-            <span className="statusLabel">Desktop status</span>
-            <strong>{shellStatus?.productName ?? "Loading shell status..."}</strong>
-            <p>{shellError ?? shellStatus?.storageStrategy ?? "Waiting for Rust state..."}</p>
-            <span className="statusPill">{shellStatus?.mode ?? "pending"}</span>
-          </div>
-        </header>
+          <label className="draftLabel">
+            Draft body
+            <textarea value={activeItem.rawInput} onChange={(event) => updateActiveItem({ rawInput: event.target.value })} />
+          </label>
 
-        <section className="workspaceGrid">
-          <div className="contentColumn">
-            <div className="panel">
-              <div className="panelHeader">
-                <span>Current focus</span>
-                <strong>{navItems.find((item) => item.key === activeKey)?.label}</strong>
-              </div>
-              <ul className="bulletList">
-                {activeSection.focusItems.map((item) => (
-                  <li key={item}>{item}</li>
+          <div className="actionBar" aria-label="Review actions">
+            <button type="button" onClick={applyTemplate}>
+              Template
+            </button>
+            <button type="button" onClick={markReady}>
+              Mark Ready
+            </button>
+            <button type="button" onClick={approveItem}>
+              Approve
+            </button>
+            <button type="button" onClick={rejectItem}>
+              Reject
+            </button>
+            <button type="button" onClick={copyMarkdown}>
+              Copy Markdown
+            </button>
+            <button type="button" onClick={exportMarkdown}>
+              Export
+            </button>
+          </div>
+
+          <p className="notice" role="status">
+            {notice}
+          </p>
+        </section>
+
+        <aside className="reviewPanel" aria-label="Review panel">
+          <section>
+            <header className="panelHeader">
+              <span>Review Gate</span>
+              <strong>{canPromote ? "Pass" : `${activeIssues.length} issue(s)`}</strong>
+            </header>
+            {activeIssues.length > 0 ? (
+              <ul className="issueList">
+                {activeIssues.map((issue: ValidationIssue) => (
+                  <li key={issue.code}>
+                    <strong>{issue.message}</strong>
+                    {issue.hint ? <span>{issue.hint}</span> : null}
+                  </li>
                 ))}
               </ul>
-            </div>
+            ) : (
+              <p className="panelCopy">This item meets the promotion requirements for its content type.</p>
+            )}
+          </section>
 
-            <div className="panelGrid">
-              <section className="panel">
-                <div className="panelHeader">
-                  <span>Shared content types</span>
-                  <strong>{contentTypes.length} reusable definitions</strong>
-                </div>
-                <div className="pillRow">
-                  {contentTypes.map((type) => (
-                    <span key={type} className="contentPill">
-                      {formatEnumLabel(type)}
-                    </span>
-                  ))}
-                </div>
-              </section>
+          <section>
+            <header className="panelHeader">
+              <span>Style</span>
+              <strong>{activePreset.name}</strong>
+            </header>
+            <p className="panelCopy">{activePreset.description}</p>
+            <dl className="detailList">
+              <dt>Tone</dt>
+              <dd>{activePreset.constraints.tone}</dd>
+              <dt>Length</dt>
+              <dd>{activePreset.constraints.length}</dd>
+              <dt>Structure</dt>
+              <dd>{activePreset.constraints.structure}</dd>
+            </dl>
+          </section>
 
-              <section className="panel">
-                <div className="panelHeader">
-                  <span>Promotion guardrail example</span>
-                  <strong>{fieldNotePromotionIssues.length} strict issue(s)</strong>
-                </div>
-                <p className="panelCopy">
-                  The desktop workspace is reading the shared validation package. This sample field note is still
-                  missing one bullet before READY/APPROVED.
-                </p>
-                <ul className="issueList">
-                  {fieldNotePromotionIssues.map((issue) => (
-                    <li key={issue.code}>{issue.message}</li>
-                  ))}
-                </ul>
-              </section>
-
-              <section className="panel">
-                <div className="panelHeader">
-                  <span>Editorial preset baseline</span>
-                  <strong>{stylePresets[0]?.name ?? "Unavailable"}</strong>
-                </div>
-                <p className="panelCopy">{stylePresets[0]?.description}</p>
-                <ul className="metaList">
-                  <li>Tone: {stylePresets[0]?.constraints.tone}</li>
-                  <li>Length: {stylePresets[0]?.constraints.length}</li>
-                  <li>Structure: {stylePresets[0]?.constraints.structure}</li>
-                </ul>
-              </section>
-            </div>
-          </div>
-
-          <aside className="detailColumn">
-            <section className="panel detailPanel">
-              <div className="panelHeader">
-                <span>Local services</span>
-                <strong>{shellStatus?.productName ?? "tenra Assembly"}</strong>
-              </div>
-              <p className="panelCopy">
-                {shellStatus?.syncStrategy ??
-                  "Sync planning stays deferred until local persistence and desktop review flows are stable."}
-              </p>
-              <div className="boundaryGrid">
-                <div>
-                  <h3>Rust owns</h3>
-                  <ul className="metaList">
-                    {(shellStatus?.rustBoundary ?? []).map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <h3>Frontend owns</h3>
-                  <ul className="metaList">
-                    {(shellStatus?.frontendBoundary ?? []).map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </section>
-
-            <section className="panel detailPanel">
-              <div className="panelHeader">
-                <span>Migration posture</span>
-                <strong>Web app remains intact</strong>
-              </div>
-              <ul className="metaList">
-                <li>Auth, Prisma, and API routes stay in `apps/webapp` for now.</li>
-                <li>Desktop starts as a shell plus shared logic consumer.</li>
-                <li>The eventual local data layer should start with SQLite and explicit sync rules.</li>
-              </ul>
-            </section>
-          </aside>
-        </section>
+          <section>
+            <header className="panelHeader">
+              <span>Export Preview</span>
+              <strong>{formatShortDate(activeItem.updatedAt)}</strong>
+            </header>
+            <pre className="markdownPreview">{markdown}</pre>
+          </section>
+        </aside>
       </main>
     </div>
   );

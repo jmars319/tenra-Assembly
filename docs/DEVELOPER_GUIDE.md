@@ -81,8 +81,8 @@ AI integration (optional):
 ## Run the desktopapp
 
 - Run `pnpm run dev:desktop`
-- The desktop app is currently a shell plus shared-logic consumer
-- Web auth, Prisma, and API routes remain in `apps/webapp`
+- The desktop app is the primary local workbench for manual content items, review gates, approvals, and Markdown export
+- Web auth, Prisma, GitHub integration, and API routes remain in `apps/webapp` as the secondary cloud-backed surface
 
 ## Run both apps
 

@@ -4,8 +4,8 @@ tenra Assembly is a human-in-the-loop system for turning repo evidence, editoria
 
 ## Current product shape
 
-- `apps/webapp` is the fuller implementation today
-- `apps/desktopapp` is the future primary client, but currently a shell
+- `apps/webapp` is the fuller cloud-backed implementation today
+- `apps/desktopapp` is a local desktop workbench for manual content items, review gates, approvals, and Markdown export
 - `packages/*` hold the low-risk shared logic both targets can reuse now
 
 ## Operating pipeline
@@ -23,7 +23,8 @@ tenra Assembly is a human-in-the-loop system for turning repo evidence, editoria
 - GitHub access is read-only
 - AI proposes; humans approve
 - No auto-posting or silent publishing
-- The webapp remains the authoritative cloud-backed path until desktop local storage and sync are proven
+- The webapp remains the authoritative cloud-backed path for auth, repo sync, API workflows, and Prisma-backed state
+- The desktop app owns local manual drafts and approval/export workflows until durable local storage and sync are expanded
 
 ## Key UI routes
 
@@ -43,7 +44,7 @@ tenra Assembly is a human-in-the-loop system for turning repo evidence, editoria
 - Web auth/session path: `apps/webapp/lib/auth`, `apps/webapp/proxy.ts`
 - Web database path: `apps/webapp/prisma`, `apps/webapp/lib/prisma.ts`
 - Web GitHub integration: `apps/webapp/lib/github`, `apps/webapp/app/api/github/*`
-- Desktop shell and Rust boundary: `apps/desktopapp/src`, `apps/desktopapp/src-tauri`
+- Desktop workbench and Rust boundary: `apps/desktopapp/src`, `apps/desktopapp/src-tauri`
 
 ## Recommended docs
 
