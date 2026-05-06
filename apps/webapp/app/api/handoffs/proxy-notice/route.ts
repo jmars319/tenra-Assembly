@@ -65,6 +65,8 @@ async function persistProxyAttempt(input: {
     },
     actorUserId: input.userId
   });
+
+  return { proxyDeliveryAttempts, proxyShapedOutputs };
 }
 
 export async function POST(request: Request) {
@@ -119,7 +121,7 @@ export async function POST(request: Request) {
     }
 
     if (!endpoint) {
-      await persistProxyAttempt({
+      const persisted = await persistProxyAttempt({
         workspaceId: auth.context.workspaceId,
         userId: auth.context.user.id,
         item,
@@ -132,7 +134,8 @@ export async function POST(request: Request) {
         delivered: false,
         deliveryMode: "json-fallback",
         handoff: payload,
-        error: "ASSEMBLY_PROXY_SHAPE_URL is not configured."
+        error: "ASSEMBLY_PROXY_SHAPE_URL is not configured.",
+        proxyDeliveryAttempts: persisted.proxyDeliveryAttempts
       });
     }
 
@@ -144,7 +147,7 @@ export async function POST(request: Request) {
 
     if (!proxyResponse.ok) {
       const error = await proxyResponse.text();
-      await persistProxyAttempt({
+      const persisted = await persistProxyAttempt({
         workspaceId: auth.context.workspaceId,
         userId: auth.context.user.id,
         item,
@@ -158,7 +161,8 @@ export async function POST(request: Request) {
         delivered: false,
         deliveryMode: "json-fallback",
         handoff: payload,
-        error
+        error,
+        proxyDeliveryAttempts: persisted.proxyDeliveryAttempts
       });
     }
 
@@ -167,7 +171,7 @@ export async function POST(request: Request) {
       text?: string;
     };
     const shapedText = proxyBody.result?.text ?? proxyBody.text ?? "";
-    await persistProxyAttempt({
+    const persisted = await persistProxyAttempt({
       workspaceId: auth.context.workspaceId,
       userId: auth.context.user.id,
       item,
@@ -187,7 +191,9 @@ export async function POST(request: Request) {
       delivered: true,
       deliveryMode: "direct-post",
       handoff: payload,
-      proxy: proxyBody
+      proxy: proxyBody,
+      proxyDeliveryAttempts: persisted.proxyDeliveryAttempts,
+      proxyShapedOutputs: persisted.proxyShapedOutputs
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Assembly Proxy handoff failed.";

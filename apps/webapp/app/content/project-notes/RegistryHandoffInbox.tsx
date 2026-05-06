@@ -19,6 +19,13 @@ type ImportResponse = {
 
 type HandoffStage = "idle" | "imported" | "drafted" | "reviewed" | "exported";
 type HandoffSource = "registry" | "scout";
+type ProxyAttempt = {
+  attemptedAt?: string;
+  endpoint?: string;
+  traceId?: string;
+  status?: "ok" | "failed" | "fallback";
+  message?: string;
+};
 
 export default function RegistryHandoffInbox() {
   const [payload, setPayload] = useState("");
@@ -29,6 +36,7 @@ export default function RegistryHandoffInbox() {
   const [stage, setStage] = useState<HandoffStage>("idle");
   const [proxyHandoffJson, setProxyHandoffJson] = useState("");
   const [proxyDelivery, setProxyDelivery] = useState("");
+  const [proxyAttempts, setProxyAttempts] = useState<ProxyAttempt[]>([]);
 
   const importHandoffRequest = async (source: HandoffSource) => {
     setBusy(true);
@@ -108,6 +116,7 @@ export default function RegistryHandoffInbox() {
         deliveryMode?: string;
         handoff?: unknown;
         proxy?: unknown;
+        proxyDeliveryAttempts?: ProxyAttempt[];
         error?: string;
       };
       if (!response.ok || !data.ok || !data.handoff) {
@@ -115,6 +124,7 @@ export default function RegistryHandoffInbox() {
         return;
       }
       setProxyHandoffJson(JSON.stringify(data.handoff, null, 2));
+      setProxyAttempts(data.proxyDeliveryAttempts ?? proxyAttempts);
       setProxyDelivery(
         deliver
           ? data.delivered
@@ -208,6 +218,32 @@ export default function RegistryHandoffInbox() {
         </div>
       ) : null}
       {proxyDelivery ? <p className="mt-3 text-sm text-slate-300">{proxyDelivery}</p> : null}
+      {proxyAttempts.length ? (
+        <div className="mt-3 rounded-lg border border-slate-800 bg-slate-950/70 p-3 text-xs text-slate-300">
+          <div className="mb-2 font-semibold text-slate-100">Proxy delivery attempts</div>
+          <div className="space-y-2">
+            {proxyAttempts.slice(0, 5).map((attempt, index) => (
+              <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between" key={`${attempt.traceId}-${index}`}>
+                <span>
+                  {attempt.status ?? "unknown"} · {attempt.attemptedAt ? new Date(attempt.attemptedAt).toLocaleString() : "pending"}
+                  {attempt.endpoint ? ` · ${attempt.endpoint}` : ""}
+                </span>
+                {attempt.message ? <span className="text-slate-500">{attempt.message.slice(0, 120)}</span> : null}
+                {attempt.status === "failed" || attempt.status === "fallback" ? (
+                  <button
+                    className="rounded-full border border-slate-700 px-3 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-60"
+                    disabled={busy || !created?.id}
+                    onClick={() => void exportProxyHandoff(true)}
+                    type="button"
+                  >
+                    Retry Proxy
+                  </button>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
       {proxyHandoffJson ? (
         <pre className="mt-3 max-h-80 overflow-auto rounded-lg border border-slate-800 bg-slate-950 p-3 text-xs text-slate-200">
           {proxyHandoffJson}

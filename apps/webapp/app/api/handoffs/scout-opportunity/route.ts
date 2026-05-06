@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { requireApiContext } from "@/lib/auth/api";
 import { createContentItem } from "@/lib/content/service";
+import { getAuditLabel } from "@/lib/audit/labels";
 import { scoutOpportunityToProjectNote } from "@/lib/handoffs/scout";
+import { getPrismaClient } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
@@ -9,6 +11,23 @@ export async function POST(request: Request) {
     if (!auth.ok) return auth.response;
 
     const handoff = scoutOpportunityToProjectNote(await request.json());
+    const prisma = getPrismaClient();
+    const project = await prisma.project.upsert({
+      where: {
+        workspaceId_tag: {
+          workspaceId: auth.context.workspaceId,
+          tag: handoff.project.tag
+        }
+      },
+      create: {
+        workspaceId: auth.context.workspaceId,
+        name: handoff.project.name,
+        tag: handoff.project.tag
+      },
+      update: {
+        name: handoff.project.name
+      }
+    });
     const result = await createContentItem(
       auth.context.workspaceId,
       {
@@ -18,6 +37,13 @@ export async function POST(request: Request) {
         summary: handoff.summary,
         rawInput: handoff.rawInput,
         structured: handoff.structured,
+        relatedSlugs: handoff.relatedSlugs,
+        topics: handoff.topics,
+        aiMeta: {
+          ...handoff.aiMeta,
+          projectId: project.id,
+          projectTag: project.tag
+        },
         source: "UPLOAD"
       },
       auth.context.user.id
@@ -27,7 +53,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, validation: result.validation }, { status: 400 });
     }
 
-    return NextResponse.json({ ok: true, item: result.item, validation: result.validation });
+    await prisma.auditLog.create({
+      data: {
+        actor: "system",
+        actorUserId: auth.context.user.id,
+        action: "SCOUT_OPPORTUNITY_IMPORTED",
+        actionLabel: getAuditLabel("SCOUT_OPPORTUNITY_IMPORTED"),
+        entityType: "Project",
+        entityId: project.id,
+        workspaceId: auth.context.workspaceId,
+        metadata: {
+          projectTag: project.tag,
+          contentItemId: result.item?.id,
+          source: "scout-opportunity-handoff"
+        }
+      }
+    });
+
+    return NextResponse.json({ ok: true, item: result.item, project, validation: result.validation });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Scout opportunity handoff failed.";
     return NextResponse.json(
