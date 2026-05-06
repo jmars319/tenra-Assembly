@@ -12,6 +12,61 @@ function getRegistryExportId(value: unknown): string | undefined {
   return sourceLink.startsWith("registry-handoff:") ? sourceLink.replace("registry-handoff:", "") : undefined;
 }
 
+function asAiMeta(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
+}
+
+async function persistProxyAttempt(input: {
+  workspaceId: string;
+  userId: string;
+  item: Awaited<ReturnType<typeof getContentItem>> extends infer Item ? NonNullable<Item> : never;
+  endpoint?: string | undefined;
+  traceId: string;
+  status: "ok" | "failed" | "fallback";
+  message?: string | undefined;
+  shapedText?: string | undefined;
+}) {
+  const aiMeta = asAiMeta(input.item.aiMeta);
+  const attempt = {
+    attemptedAt: new Date().toISOString(),
+    endpoint: input.endpoint,
+    traceId: input.traceId,
+    status: input.status,
+    message: input.message
+  };
+  const proxyDeliveryAttempts = Array.isArray(aiMeta.proxyDeliveryAttempts)
+    ? [attempt, ...aiMeta.proxyDeliveryAttempts].slice(0, 20)
+    : [attempt];
+  const proxyShapedOutputs =
+    input.shapedText && input.shapedText.trim()
+      ? [
+          {
+            shapedAt: attempt.attemptedAt,
+            endpoint: input.endpoint,
+            traceId: input.traceId,
+            text: input.shapedText
+          },
+          ...(Array.isArray(aiMeta.proxyShapedOutputs) ? aiMeta.proxyShapedOutputs : [])
+        ].slice(0, 10)
+      : aiMeta.proxyShapedOutputs;
+
+  await updateContentItem(input.workspaceId, input.item.id, {
+    aiMeta: {
+      ...aiMeta,
+      proxyDeliveryAttempts,
+      ...(proxyShapedOutputs ? { proxyShapedOutputs } : {}),
+      proxyDelivery: {
+        deliveredAt: attempt.attemptedAt,
+        endpoint: input.endpoint,
+        traceId: input.traceId,
+        status: input.status,
+        shapedText: input.shapedText
+      }
+    },
+    actorUserId: input.userId
+  });
+}
+
 export async function POST(request: Request) {
   try {
     const auth = await requireApiContext("CONTENT_OPS");
@@ -64,6 +119,14 @@ export async function POST(request: Request) {
     }
 
     if (!endpoint) {
+      await persistProxyAttempt({
+        workspaceId: auth.context.workspaceId,
+        userId: auth.context.user.id,
+        item,
+        traceId: payload.proxyShapeRequest.traceId,
+        status: "fallback",
+        message: "ASSEMBLY_PROXY_SHAPE_URL is not configured."
+      });
       return NextResponse.json({
         ok: true,
         delivered: false,
@@ -80,12 +143,22 @@ export async function POST(request: Request) {
     });
 
     if (!proxyResponse.ok) {
+      const error = await proxyResponse.text();
+      await persistProxyAttempt({
+        workspaceId: auth.context.workspaceId,
+        userId: auth.context.user.id,
+        item,
+        endpoint,
+        traceId: payload.proxyShapeRequest.traceId,
+        status: "failed",
+        message: error
+      });
       return NextResponse.json({
         ok: true,
         delivered: false,
         deliveryMode: "json-fallback",
         handoff: payload,
-        error: await proxyResponse.text()
+        error
       });
     }
 
@@ -94,21 +167,18 @@ export async function POST(request: Request) {
       text?: string;
     };
     const shapedText = proxyBody.result?.text ?? proxyBody.text ?? "";
-    const proxyMeta = {
-      proxyDelivery: {
-        deliveredAt: new Date().toISOString(),
-        endpoint,
-        traceId: payload.proxyShapeRequest.traceId,
-        shapedText
-      }
-    };
+    await persistProxyAttempt({
+      workspaceId: auth.context.workspaceId,
+      userId: auth.context.user.id,
+      item,
+      endpoint,
+      traceId: payload.proxyShapeRequest.traceId,
+      status: "ok",
+      shapedText
+    });
 
     await updateContentItem(auth.context.workspaceId, item.id, {
       body: shapedText ? `${draftText}\n\n## Proxy shaped output\n\n${shapedText}` : draftText,
-      aiMeta:
-        item.aiMeta && typeof item.aiMeta === "object" && !Array.isArray(item.aiMeta)
-          ? { ...item.aiMeta, ...proxyMeta }
-          : proxyMeta,
       actorUserId: auth.context.user.id
     });
 

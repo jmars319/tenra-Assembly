@@ -18,6 +18,7 @@ type ImportResponse = {
 };
 
 type HandoffStage = "idle" | "imported" | "drafted" | "reviewed" | "exported";
+type HandoffSource = "registry" | "scout";
 
 export default function RegistryHandoffInbox() {
   const [payload, setPayload] = useState("");
@@ -29,7 +30,7 @@ export default function RegistryHandoffInbox() {
   const [proxyHandoffJson, setProxyHandoffJson] = useState("");
   const [proxyDelivery, setProxyDelivery] = useState("");
 
-  const importRegistryRequest = async () => {
+  const importHandoffRequest = async (source: HandoffSource) => {
     setBusy(true);
     setCreated(null);
     setErrors([]);
@@ -45,11 +46,14 @@ export default function RegistryHandoffInbox() {
       }
       setStage("imported");
 
-      const response = await fetch("/api/handoffs/registry-document", {
+      const response = await fetch(
+        source === "registry" ? "/api/handoffs/registry-document" : "/api/handoffs/scout-opportunity",
+        {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
-      });
+        },
+      );
       const data = (await response.json()) as ImportResponse;
       if (!response.ok || !data.ok) {
         setErrors(
@@ -128,16 +132,29 @@ export default function RegistryHandoffInbox() {
     <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
       <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
         <div>
-          <div className="text-sm font-semibold text-slate-200">Registry Handoff Inbox</div>
-          <div className="mt-1 text-xs text-slate-500">tenra-registry.assembly-document-request.v1</div>
+          <div className="text-sm font-semibold text-slate-200">Suite Handoff Inbox</div>
+          <div className="mt-1 text-xs text-slate-500">
+            Registry document requests and Scout opportunity handoffs
+          </div>
         </div>
-        <button
-          className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={busy || !payload.trim()}
-          onClick={importRegistryRequest}
-        >
-          {busy ? "Importing" : "Create draft"}
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={busy || !payload.trim()}
+            onClick={() => void importHandoffRequest("registry")}
+            type="button"
+          >
+            {busy ? "Importing" : "Create Registry draft"}
+          </button>
+          <button
+            className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={busy || !payload.trim()}
+            onClick={() => void importHandoffRequest("scout")}
+            type="button"
+          >
+            {busy ? "Importing" : "Create Scout draft"}
+          </button>
+        </div>
       </div>
       <div className="mt-4 grid gap-2 text-xs text-slate-400 md:grid-cols-4">
         {(["imported", "drafted", "reviewed", "exported"] as const).map((step) => (
@@ -157,7 +174,7 @@ export default function RegistryHandoffInbox() {
         className="mt-4 min-h-40 w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 font-mono text-sm text-slate-200"
         value={payload}
         onChange={(event) => setPayload(event.target.value)}
-        placeholder='{"schema":"tenra-registry.assembly-document-request.v1",...}'
+        placeholder='{"schema":"tenra-registry.assembly-document-request.v1",...} or {"schema":"tenra-scout.opportunity-handoff.v1",...}'
       />
       {created ? (
         <div className="mt-3 rounded-lg border border-emerald-900 bg-emerald-950/50 px-3 py-2 text-sm text-emerald-100">

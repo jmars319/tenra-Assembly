@@ -74,6 +74,27 @@ export interface AssemblyProxyNoticeHandoff {
   };
 }
 
+export interface ScoutOpportunityHandoff {
+  schema: "tenra-scout.opportunity-handoff.v1";
+  exportedAt: string;
+  sourceApp: "scout";
+  runId: string;
+  candidateId: string;
+  businessName: string;
+  primaryUrl: string;
+  evidenceMarkdown: string;
+  recommendedNextApps: Array<"assembly" | "proxy">;
+  proxyShapeRequest: {
+    clientApp: "scout";
+    surface: "email" | "operator-brief" | "report";
+    profileId: string;
+    purpose: string;
+    draftText: string;
+    hardConstraints: string[];
+    traceId: string;
+  };
+}
+
 function isRegistryDocumentOutput(
   value: unknown
 ): value is RegistryAssemblyDocumentRequest["desiredOutput"] {
@@ -81,4 +102,46 @@ function isRegistryDocumentOutput(
     typeof value === "string" &&
     ["letter", "email", "notice", "agreement", "statement"].includes(value)
   );
+}
+
+export function parseScoutOpportunityHandoff(input: unknown): ScoutOpportunityHandoff {
+  if (!input || typeof input !== "object") {
+    throw new Error("Scout opportunity handoff must be an object.");
+  }
+
+  const candidate = input as Partial<ScoutOpportunityHandoff>;
+  const proxyShapeRequest = candidate.proxyShapeRequest;
+  if (
+    candidate.schema !== "tenra-scout.opportunity-handoff.v1" ||
+    candidate.sourceApp !== "scout" ||
+    typeof candidate.exportedAt !== "string" ||
+    typeof candidate.runId !== "string" ||
+    typeof candidate.candidateId !== "string" ||
+    typeof candidate.businessName !== "string" ||
+    typeof candidate.primaryUrl !== "string" ||
+    typeof candidate.evidenceMarkdown !== "string" ||
+    !Array.isArray(candidate.recommendedNextApps) ||
+    !proxyShapeRequest ||
+    proxyShapeRequest.clientApp !== "scout" ||
+    typeof proxyShapeRequest.profileId !== "string" ||
+    typeof proxyShapeRequest.purpose !== "string" ||
+    typeof proxyShapeRequest.draftText !== "string" ||
+    !Array.isArray(proxyShapeRequest.hardConstraints) ||
+    typeof proxyShapeRequest.traceId !== "string"
+  ) {
+    throw new Error("Scout opportunity handoff is missing required fields.");
+  }
+
+  return {
+    schema: "tenra-scout.opportunity-handoff.v1",
+    exportedAt: candidate.exportedAt,
+    sourceApp: "scout",
+    runId: candidate.runId,
+    candidateId: candidate.candidateId,
+    businessName: candidate.businessName,
+    primaryUrl: candidate.primaryUrl,
+    evidenceMarkdown: candidate.evidenceMarkdown,
+    recommendedNextApps: candidate.recommendedNextApps,
+    proxyShapeRequest
+  };
 }
