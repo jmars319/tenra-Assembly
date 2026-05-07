@@ -6,7 +6,11 @@ Generated from `tenra Registry/contracts/handoff-catalog.json` by `tenra Registr
 
 document and content assembly module
 
-keep unique; Registry, Scout, Derive, Sentinel, and Vicina should call Assembly for draft creation instead of embedding its editor.
+keep unique; other apps may call Assembly for draft creation, but every producer must still be useful without Assembly.
+
+## Standalone Mode
+
+Runs as a complete document and project-note workspace with local drafting, content records, project notes, and proxy-notice export.
 
 ## Accepted Inputs
 
