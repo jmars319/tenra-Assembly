@@ -1,120 +1,73 @@
-# tenra Assembly Monorepo
+# tenra Assembly
 
-tenra Assembly is a desktop-first tool for AI-assisted, human-approved content production. This repo keeps the existing web app fully functional while giving the Tauri desktop client a practical local content workbench.
+tenra Assembly is an AI-assisted content operations workbench for turning source material into reviewed, human-approved content outputs. It keeps draft generation, review state, approval, export, and provider configuration visible instead of treating content production as a black box.
 
-Start here:
-- `docs/SYSTEM_OVERVIEW.md`
-- `docs/DEVELOPER_GUIDE.md`
-- `docs/REPO_MAP.md`
-- `docs/STABILITY_CHECKLIST.md`
-- `docs/DESKTOP_ARCHITECTURE.md`
+The system is desktop-first for local workbench use, while the existing web app remains the fuller cloud-backed implementation for auth, Prisma-backed workflows, and hosted API work.
 
-## Workspace layout
+## Operational Purpose
+
+- Convert briefs, notes, and source material into structured draft workflows.
+- Keep human review and approval as explicit workflow states.
+- Support local drafting and export without requiring a cloud provider.
+- Share reusable domain, prompt, and type logic between web and desktop surfaces.
+
+## Design Posture
+
+- AI assistance is a bounded drafting aid, not an autonomous publisher.
+- Local model support is available through provider boundaries.
+- The desktop surface owns portable workbench import, export, and review loops.
+- Hosted-web concerns stay isolated in the web app.
+- Shared packages carry product vocabulary and validation rules.
+
+## Architecture
 
 ```text
 apps/
-  webapp/       Existing Next.js + Prisma implementation
-  desktopapp/   Tauri + Rust + React/Vite local workbench
+  webapp/       Next.js, Prisma, auth, API routes, and fuller product behavior
+  desktopapp/   Tauri + Rust + React/Vite local content workbench
 
 packages/
   shared-types/ Reusable enums, DTOs, presets, and feature keys
-  domain/       Reusable validators, parsers, and audit label mapping
+  domain/       Validation helpers, parsers, and audit-label mapping
   prompts/      Shared instruction layering and prompt guidance
+
+docs/           System overview, desktop architecture, repo map, and handoffs
 ```
 
-What belongs where:
-- `apps/webapp`: current full product behavior, auth, Prisma, API routes, and hosted-web concerns
-- `apps/desktopapp`: local draft, review, approval, Markdown export, JSON workbench import/export, Tauri/Rust boundary work, and shared-package consumption
-- `packages/*`: low-risk shared logic that both app targets can consume safely
+## Current State
 
-## Canonical commands
+- The web app remains the broadest product surface.
+- The desktop app is a usable local workbench for manual content items, review gates, approvals, Markdown export, and JSON workbench backup/restore.
+- Local AI provider support is available through Ollama or OpenAI-compatible endpoints.
+- OpenAI-compatible hosted provider support remains available when configured.
+- The desktop app does not bundle model weights.
 
-Bootstrap:
+## Deployment Posture
+
+Assembly is currently a mixed local and web codebase. The desktop app is suitable for local operator workflows; the web app owns hosted implementation concerns. Production hardening depends on the chosen deployment target, provider configuration, auth posture, and database setup.
+
+## Working Locally
 
 ```bash
 pnpm run bootstrap
-```
-
-Daily development:
-
-```bash
 pnpm run dev:web
 pnpm run dev:desktop
-pnpm run dev:both
-```
-
-Verification:
-
-```bash
-pnpm run check:env
-pnpm run check:packages
-pnpm run lint
-pnpm run typecheck
-pnpm run verify:web
-pnpm run verify:desktop
 pnpm run verify:all
 pnpm run doctor
 ```
 
-Builds:
+For local model drafting, configure the `ASSEMBLY_LOCAL_AI_*` environment values described in the developer guide.
 
-```bash
-pnpm run build:web
-pnpm run build:desktop
-pnpm run launch:desktop
-pnpm run prisma:generate:web
-pnpm run prisma:validate:web
-```
+## Direction
 
-Notes:
-- `doctor` is the canonical non-interactive repo health command.
-- `lint` covers the JS/TS workspace.
-- `typecheck` covers both apps and all shared packages.
-- `verify:web` and `verify:desktop` are meaningful, target-specific health checks.
+- Continue separating local workbench ownership from hosted-web responsibilities.
+- Improve source tracking, review ergonomics, and export formats.
+- Keep provider configuration explicit and replaceable.
+- Preserve human approval as a required operational boundary.
 
-## Current product split
+## Related Documentation
 
-- `apps/webapp` remains the fuller cloud-backed implementation today.
-- `apps/desktopapp` is a usable local desktop workbench for manual content items, review gates, approvals, Markdown export, and portable JSON workbench backup/restore.
-- `packages/*` hold the shared core that both targets can reuse now.
-
-## Local AI Provider
-
-Assembly can now run AI draft/assist flows against a local model server instead
-of requiring OpenAI. The current local path uses Ollama's native `/api/generate`
-endpoint:
-
-```bash
-ASSEMBLY_LOCAL_AI_PROVIDER=ollama
-ASSEMBLY_LOCAL_AI_BASE_URL=http://127.0.0.1:11434
-ASSEMBLY_LOCAL_AI_MODEL=llama3.2
-```
-
-`OPENAI_API_KEY` and workspace API keys still work. For an OpenAI-compatible
-local server, set `ASSEMBLY_LOCAL_AI_PROVIDER=openai-compatible` and point
-`ASSEMBLY_LOCAL_AI_BASE_URL` at the local `/v1` endpoint. `OPENAI_BASE_URL`
-also remains supported. The local model still has to be running; Assembly does
-not bundle model weights.
-
-When to use each app:
-- Use `webapp` for auth, Prisma-backed flows, API work, and the current end-to-end product.
-- Use `desktopapp` for local drafting, reusable content templates, validation, approval state, export, Rust/Tauri boundary work, and future local-first ownership.
-
-## Environment and compatibility names
-
-- Canonical env files live at the repo root: `.env` and `.env.local`
-- `apps/webapp` loads repo-root env files explicitly for dev, build, and Prisma commands
-- `desktopapp` currently does not depend on the webapp env loading path
-- Preferred env names now use `ASSEMBLY_*`
-- Legacy `LEDGER_*` names still work where noted for compatibility
-- See `docs/DEVELOPER_GUIDE.md` for the exact compatibility mapping and current setup notes.
-
-## Docs kept on purpose
-
-- `docs/SYSTEM_OVERVIEW.md`: product/system summary and boundaries
-- `docs/DEVELOPER_GUIDE.md`: bootstrap, env, dev, verify, and compatibility names
-- `docs/REPO_MAP.md`: monorepo layout, shared/web-only split, and shim inventory
-- `docs/STABILITY_CHECKLIST.md`: operational checklist before changes, commits, handoff, and release tags
-- `docs/DESKTOP_ARCHITECTURE.md`: local-first and Rust/frontend boundary note
-- `docs/DEPLOYMENT_GUIDE.md`: web deployment notes
-- `docs/PHASE0_MVP_PLAN.md`: archived design context that predates the current stabilized monorepo
+- [System Overview](docs/SYSTEM_OVERVIEW.md)
+- [Desktop Architecture](docs/DESKTOP_ARCHITECTURE.md)
+- [Developer Guide](docs/DEVELOPER_GUIDE.md)
+- [Repo Map](docs/REPO_MAP.md)
