@@ -16,11 +16,6 @@
     "apps/webapp/.next/static/chunks",
     "apps/webapp/.next/static/chunks/app"
   ],
-  "specificFileBudgets": {
-    "apps/webapp/app/content/new/ContentNewClient.tsx": 980,
-    "apps/webapp/lib/content/service.ts": 675,
-    "apps/webapp/app/briefs/BriefsClient.tsx": 675
-  },
   "ignoredSegments": [],
   "allowedGenerated": [
     "src/vite-env.d.ts",
