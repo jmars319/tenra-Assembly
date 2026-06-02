@@ -1,6 +1,6 @@
-# tenra Assembly Desktop App
+# Assembly by Tenra Desktop App
 
-Tauri desktop workbench for tenra Assembly. This app currently provides:
+Tauri desktop workbench for Assembly by Tenra. This app currently provides:
 
 - Local manual content drafts
 - Reusable templates for each shared content type

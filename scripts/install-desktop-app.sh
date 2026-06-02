@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_NAME="tenra Assembly"
+APP_NAME="Assembly by Tenra"
 SOURCE_APP="apps/desktopapp/src-tauri/target/release/bundle/macos/${APP_NAME}.app"
 TARGET_APP="/Applications/${APP_NAME}.app"
 

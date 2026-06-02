@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "tenra Assembly",
+  "productName": "Assembly by Tenra",
   "version": "0.1.0",
   "identifier": "co.tenra.assembly",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "tenra Assembly",
+        "title": "Assembly by Tenra",
         "width": 1380,
         "height": 880,
         "minWidth": 1120,

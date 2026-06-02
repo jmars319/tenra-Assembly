@@ -1,4 +1,4 @@
-# tenra Assembly Phase 0 Hardening Plan (Archived)
+# Assembly by Tenra Phase 0 Hardening Plan (Archived)
 
 Purpose: provide a lean, implementable design plan and Prisma schema proposal for approval before Phase 1. This document is kept as historical design context; it predates the current stabilized monorepo and should not be treated as the primary source of truth for current setup commands.
 

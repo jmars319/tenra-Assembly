@@ -103,7 +103,7 @@ export const handoffTemplates: Record<
 > = {
   scout: {
     label: "Scout evidence pack",
-    source: "tenra Scout handoff",
+    source: "Scout by Tenra handoff",
     title: "Scout opportunity brief",
     type: "SIGNAL_LOG",
     rawInput:
@@ -114,7 +114,7 @@ export const handoffTemplates: Record<
   },
   registry: {
     label: "Registry document request",
-    source: "tenra Registry handoff",
+    source: "Registry by Tenra handoff",
     title: "Registry customer document",
     type: "PROJECT_NOTE",
     rawInput:
@@ -126,7 +126,7 @@ export const handoffTemplates: Record<
   },
   derive: {
     label: "Derive answer card",
-    source: "tenra Derive handoff",
+    source: "Derive by Tenra handoff",
     title: "Derive reasoning brief",
     type: "DECISION_RECORD",
     rawInput:
@@ -137,7 +137,7 @@ export const handoffTemplates: Record<
   },
   proxy: {
     label: "Proxy-shaped output",
-    source: "tenra Proxy handoff",
+    source: "Proxy by Tenra handoff",
     title: "Proxy output review",
     type: "SYSTEMS_MEMO",
     rawInput:

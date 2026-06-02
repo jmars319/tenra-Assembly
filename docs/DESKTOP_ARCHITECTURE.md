@@ -1,6 +1,6 @@
 # Desktop Architecture Note
 
-tenra Assembly ships two apps in the same monorepo because the existing web app still owns the cloud-backed workflow, while the desktop client now owns a local content workbench and can grow toward the primary surface.
+Assembly by Tenra ships two apps in the same monorepo because the existing web app still owns the cloud-backed workflow, while the desktop client now owns a local content workbench and can grow toward the primary surface.
 
 ## What remains web-only today
 

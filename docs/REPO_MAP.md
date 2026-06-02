@@ -1,6 +1,6 @@
 # Repo Map
 
-tenra Assembly is a pnpm monorepo with two app targets and a small shared core.
+Assembly by Tenra is a pnpm monorepo with two app targets and a small shared core.
 
 ## Top-level folders
 

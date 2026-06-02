@@ -1,6 +1,6 @@
-# tenra Assembly
+# Assembly by Tenra
 
-tenra Assembly is an AI-assisted content operations workbench for turning source material into reviewed, human-approved content outputs. It keeps draft generation, review state, approval, export, and provider configuration visible instead of treating content production as a black box.
+Assembly by Tenra is an AI-assisted content operations workbench for turning source material into reviewed, human-approved content outputs. It keeps draft generation, review state, approval, export, and provider configuration visible instead of treating content production as a black box.
 
 The system is desktop-first for local workbench use, while the existing web app remains the fuller cloud-backed implementation for auth, Prisma-backed workflows, and hosted API work.
 

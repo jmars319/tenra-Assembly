@@ -22,7 +22,7 @@ export default function TopNav({
   return (
     <nav className="flex flex-wrap items-center justify-between gap-6 border-b border-slate-800 bg-slate-950/80 px-8 py-4">
       <div className="flex items-baseline gap-3">
-        <span className="text-xl font-semibold tracking-tight">tenra Assembly</span>
+        <span className="text-xl font-semibold tracking-tight">Assembly by Tenra</span>
       </div>
       <div className="flex flex-wrap items-center gap-4 text-sm">
         {navItems

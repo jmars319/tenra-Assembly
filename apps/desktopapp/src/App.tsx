@@ -249,7 +249,7 @@ function App() {
     <div className="shell">
       <aside className="sidebar">
         <header className="brandBlock">
-          <span className="brandTag">tenra Assembly</span>
+          <span className="brandTag">Assembly by Tenra</span>
           <h1>Content workbench</h1>
           <p>Local drafts, review gates, approval state, and export.</p>
         </header>
@@ -321,7 +321,7 @@ function App() {
         </nav>
 
         <footer className="runtimeNote">
-          <strong>{shellStatus?.productName ?? "tenra Assembly"}</strong>
+          <strong>{shellStatus?.productName ?? "Assembly by Tenra"}</strong>
           <span>{shellError ?? shellStatus?.mode ?? "desktop"}</span>
         </footer>
       </aside>

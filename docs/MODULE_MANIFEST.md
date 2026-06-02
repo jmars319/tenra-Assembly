@@ -8,7 +8,7 @@ Runs as a complete document and project-note workspace with local drafting, cont
 
 ## Repository Path
 
-`business/supporting/tenra Assembly`
+`business/supporting/Assembly by Tenra`
 
 ## Required Suite Dependencies
 

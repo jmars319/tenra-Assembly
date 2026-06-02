@@ -4,7 +4,7 @@ use tauri::{
     Manager, Runtime,
 };
 
-const APP_NAME: &str = "tenra Assembly";
+const APP_NAME: &str = "Assembly by Tenra";
 const MENU_SETTINGS: &str = "settings";
 const MENU_CLOSE_WINDOW: &str = "close-window";
 const MENU_QUIT: &str = "quit";
@@ -28,7 +28,7 @@ fn load_shell_status() -> DesktopShellStatus {
     // - OS keychain / secure enclave for secrets
     // - background tasks and file access through explicit commands
     DesktopShellStatus {
-        product_name: "tenra Assembly",
+        product_name: "Assembly by Tenra",
         mode: "desktop-shell",
         storage_strategy: "Local-first is planned; SQLite is the likely first durable store.",
         sync_strategy: "Cloud sync stays deferred until the local model is stable and auditable.",
@@ -73,7 +73,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![load_shell_status])
         .build(tauri::generate_context!())
-        .expect("error while building tenra Assembly desktop");
+        .expect("error while building Assembly by Tenra desktop");
 
     app.run(|app_handle, event| match event {
         #[cfg(target_os = "macos")]

@@ -1,6 +1,6 @@
 # Developer Guide
 
-Use this guide for day-to-day work in the tenra Assembly monorepo.
+Use this guide for day-to-day work in the Assembly by Tenra monorepo.
 
 ## Bootstrap
 

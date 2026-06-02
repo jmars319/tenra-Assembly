@@ -34,10 +34,10 @@ const seedData = (): MemoryData => {
       id: "post-tenra-assembly-li-001",
       projectId: "project-tenra-assembly",
       platform: "LinkedIn",
-      title: "tenra Assembly Q1 Launch",
+      title: "Assembly by Tenra Q1 Launch",
       status: "NEEDS_REVIEW",
       postJson: {
-        headline: "tenra launches tenra Assembly",
+        headline: "tenra launches Assembly by Tenra",
         body: "Introducing Assembly for pipeline visibility.",
         cta: "Book a demo",
       },
@@ -49,7 +49,7 @@ const seedData = (): MemoryData => {
       id: "post-tenra-assembly-x-001",
       projectId: "project-tenra-assembly",
       platform: "X",
-      title: "tenra Assembly teaser",
+      title: "Assembly by Tenra teaser",
       status: "NEEDS_REVIEW",
       postJson: {
         text: "Assembly keeps the post pipeline clear: repo -> brief -> posts -> approvals -> schedule.",
@@ -138,7 +138,7 @@ const seedData = (): MemoryData => {
       title: "Send LinkedIn post to Legal",
       status: "PENDING",
       dueAt: new Date(Date.now() + 2 * 86400000).toISOString(),
-      copyText: "Please review the tenra LinkedIn post for compliance.",
+      copyText: "Please review the Tenra LinkedIn post for compliance.",
     },
     {
       id: "task-002",
@@ -170,7 +170,7 @@ const seedData = (): MemoryData => {
     {
       id: "repo-001",
       repo: "jmars319/Assembly",
-      projectTag: "tenra Assembly",
+      projectTag: "Assembly by Tenra",
       enabled: true,
       triggerPosts: true,
       triggerSchedules: true,
@@ -188,7 +188,7 @@ const seedData = (): MemoryData => {
   ];
 
   const projects: Project[] = [
-    { id: "project-tenra-assembly", name: "tenra Assembly", tag: "tenra Assembly" },
+    { id: "project-tenra-assembly", name: "Assembly by Tenra", tag: "Assembly by Tenra" },
     { id: "project-tenra", name: "tenra", tag: "tenra" },
   ];
 

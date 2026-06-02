@@ -43,7 +43,7 @@ type WorkspaceApiKeyState = {
 const defaultInstructions: BrandInstruction[] = [
   {
     id: "temp-tenra-assembly",
-    tag: "tenra Assembly",
+    tag: "Assembly by Tenra",
     tone: "Direct, technical, low-hype.",
     hardRules: "No em dashes. Avoid superlatives.",
     doList: "Use short sentences. Prefer active voice.",

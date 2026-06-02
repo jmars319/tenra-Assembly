@@ -1,6 +1,6 @@
-# tenra Assembly Handoffs
+# Assembly by Tenra Handoffs
 
-tenra Assembly stays a unique app because human-approved content production, review gates, templates, and export workflows form a real workbench.
+Assembly by Tenra stays a unique app because human-approved content production, review gates, templates, and export workflows form a real workbench.
 
 ## Consumes
 
