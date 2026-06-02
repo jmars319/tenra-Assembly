@@ -76,10 +76,13 @@
     "verify:web": "bash ./scripts/verify-web.sh",
     "verify:desktop": "bash ./scripts/verify-desktop.sh",
     "verify:handoffs": "node ./scripts/validate-handoffs.mjs",
-    "verify:all": "bash ./scripts/verify-all.sh",
+    "verify:all": "bash ./scripts/verify-all.sh && pnpm run audit:maintainability && pnpm run budget:bundle",
     "doctor": "bash ./scripts/doctor.sh",
     "prisma:generate:web": "pnpm --filter webapp prisma:generate",
-    "prisma:validate:web": "pnpm --filter webapp prisma:validate"
+    "prisma:validate:web": "pnpm --filter webapp prisma:validate",
+    "analyze:bundle": "node scripts/analyze-build.mjs",
+    "budget:bundle": "node scripts/analyze-build.mjs --strict",
+    "audit:maintainability": "node scripts/audit-maintainability.mjs --strict"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

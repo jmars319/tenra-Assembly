@@ -1,0 +1,125 @@
+.toolbar,
+.actionBar,
+.handoffList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.toolbar button,
+.toolbar select,
+.actionBar button,
+.handoffList button,
+input,
+textarea,
+select {
+  border: 1px solid #cfc7bc;
+  border-radius: 8px;
+  background: #1E1E22;
+  color: #22262c;
+}
+
+.toolbar button,
+.toolbar select,
+.actionBar button,
+.handoffList button {
+  min-height: 36px;
+  padding: 8px 12px;
+}
+
+.toolbar button,
+.actionBar button {
+  background: #28352f;
+  border-color: #28352f;
+  color: #fffdfa;
+  font-weight: 700;
+}
+
+.actionBar button:nth-child(1),
+.actionBar button:nth-child(4),
+.actionBar button:nth-child(5),
+.actionBar button:nth-child(6) {
+  background: #1E1E22;
+  border-color: #cfc7bc;
+  color: #22262c;
+}
+
+.itemList {
+  display: grid;
+  gap: 8px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.itemButton {
+  width: 100%;
+  border: 1px solid #d5cec4;
+  border-radius: 8px;
+  background: #1E1E22;
+  color: inherit;
+  padding: 11px 12px;
+  text-align: left;
+  display: grid;
+  gap: 3px;
+}
+
+.itemButton:hover,
+.itemButtonActive {
+  border-color: #7c8f84;
+  background: #1E1E22;
+}
+
+.itemButton span,
+.itemButton small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemButton small {
+  color: #71685e;
+}
+
+.runtimeNote {
+  margin-top: auto;
+  border-top: 1px solid #d4ccc1;
+  padding-top: 12px;
+  display: grid;
+  gap: 2px;
+  font-size: 0.86rem;
+}
+
+.handoffPanel {
+  border: 1px solid #d7d0c6;
+  border-radius: 8px;
+  background: #1E1E22;
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.handoffList button {
+  background: #1E1E22;
+  color: #22262c;
+  text-align: left;
+}
+
+.hiddenFileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.mainPanel {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(520px, 1fr) 390px;
+  gap: 18px;
+  padding: 20px;
+}
+

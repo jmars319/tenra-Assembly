@@ -1,0 +1,165 @@
+.editorPanel,
+.reviewPanel section {
+  border: 1px solid #d8d0c5;
+  border-radius: 8px;
+  background: #1E1E22;
+}
+
+.editorPanel {
+  min-width: 0;
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  padding: 18px;
+}
+
+.reviewPanel {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
+.reviewPanel section {
+  padding: 16px;
+  min-width: 0;
+}
+
+.sectionHeader,
+.panelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.statusPill {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.statusDRAFT {
+  background: #1E1E22;
+  color: #5f574e;
+}
+
+.statusREADY {
+  background: #1E1E22;
+  color: #24537b;
+}
+
+.statusAPPROVED {
+  background: #dcecdf;
+  color: #285d35;
+}
+
+.statusREJECTED {
+  background: #1E1E22;
+  color: #84392d;
+}
+
+.statusARCHIVED {
+  background: #1E1E22;
+  color: #5c5b58;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+label {
+  display: grid;
+  gap: 6px;
+  color: #4e473f;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 11px;
+  font-weight: 500;
+}
+
+textarea {
+  min-height: 420px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.draftLabel {
+  min-width: 0;
+}
+
+.notice {
+  min-height: 1.4em;
+  font-size: 0.9rem;
+}
+
+.issueList {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.issueList li {
+  border-left: 3px solid #9f4b36;
+  background: #2C2C30;
+  padding: 9px 10px;
+  display: grid;
+  gap: 2px;
+}
+
+.issueList strong {
+  font-size: 0.9rem;
+}
+
+.issueList span {
+  color: #766d63;
+  font-size: 0.84rem;
+}
+
+.detailList {
+  margin: 12px 0 0;
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 8px 12px;
+}
+
+.detailList dt {
+  color: #766d63;
+  font-weight: 700;
+}
+
+.detailList dd {
+  margin: 0;
+  min-width: 0;
+}
+
+.markdownPreview {
+  margin: 12px 0 0;
+  max-height: 360px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border: 1px solid #ded7cd;
+  border-radius: 8px;
+  background: #1E1E22;
+  padding: 12px;
+  color: #313235;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+

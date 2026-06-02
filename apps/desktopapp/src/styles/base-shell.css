@@ -1,0 +1,120 @@
+:root {
+  color: #22262c;
+  background: #1E1E22;
+  font-family: Inter, "Avenir Next", "Segoe UI", sans-serif;
+  line-height: 1.45;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+select {
+  cursor: pointer;
+}
+
+button:disabled,
+select:disabled {
+  cursor: default;
+  opacity: 0.58;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 312px minmax(0, 1fr);
+  background: #1E1E22;
+}
+
+.sidebar {
+  border-right: 1px solid #d9d2c7;
+  background: #1E1E22;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.brandBlock {
+  display: grid;
+  gap: 6px;
+}
+
+.brandBlock h1,
+.sectionHeader h2 {
+  margin: 0;
+  letter-spacing: 0;
+  line-height: 1.08;
+}
+
+.brandBlock h1 {
+  font-size: 1.55rem;
+}
+
+.sectionHeader h2 {
+  font-size: 1.45rem;
+  overflow-wrap: anywhere;
+}
+
+.brandBlock p,
+.panelCopy,
+.notice,
+.runtimeNote span {
+  margin: 0;
+  color: #6b6258;
+}
+
+.brandTag,
+.eyebrow,
+.panelHeader span {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #6e5f4e;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.summaryGrid div {
+  border: 1px solid #d7d0c6;
+  border-radius: 8px;
+  background: #1E1E22;
+  padding: 10px;
+  display: grid;
+  gap: 2px;
+}
+
+.summaryGrid strong {
+  font-size: 1.25rem;
+}
+
+.summaryGrid span {
+  color: #766d63;
+  font-size: 0.78rem;
+}
+

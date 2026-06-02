@@ -1,0 +1,146 @@
+{
+  "packageNames": [
+    {
+      "path": "apps/desktopapp/package.json",
+      "name": "desktopapp"
+    },
+    {
+      "path": "apps/webapp/package.json",
+      "name": "webapp"
+    },
+    {
+      "path": "package.json",
+      "name": "tenra-assembly"
+    },
+    {
+      "path": "packages/domain/package.json",
+      "name": "@assembly/domain"
+    },
+    {
+      "path": "packages/prompts/package.json",
+      "name": "@assembly/prompts"
+    },
+    {
+      "path": "packages/shared-types/package.json",
+      "name": "@assembly/shared-types"
+    }
+  ],
+  "packageExports": [
+    {
+      "path": "packages/domain/src/index.ts",
+      "exports": []
+    },
+    {
+      "path": "packages/prompts/src/index.ts",
+      "exports": []
+    },
+    {
+      "path": "packages/shared-types/src/index.ts",
+      "exports": []
+    }
+  ],
+  "appRoutes": [
+    "/",
+    "accept-invite",
+    "accept-invite/[token]",
+    "api/ai/brief-draft",
+    "api/ai/brief-suggest",
+    "api/ai/brief-suggest-text",
+    "api/ai/content/generate",
+    "api/ai/post",
+    "api/ai/posts",
+    "api/ai/schedules/propose-from-post",
+    "api/ai/status",
+    "api/ai/tasks/suggest",
+    "api/auth/accept-invite",
+    "api/auth/forgot",
+    "api/auth/login",
+    "api/auth/logout",
+    "api/auth/reset",
+    "api/briefs",
+    "api/briefs/[id]",
+    "api/content/items",
+    "api/content/items/[id]",
+    "api/content/items/[id]/assist",
+    "api/content/items/[id]/status",
+    "api/content/project-notes/import",
+    "api/content/schedules/[id]/status",
+    "api/content/status",
+    "api/content/upload",
+    "api/dashboard",
+    "api/evidence/capture",
+    "api/github/callback",
+    "api/github/complete",
+    "api/github/disconnect",
+    "api/github/install",
+    "api/github/repos",
+    "api/github/selection",
+    "api/github/status",
+    "api/github/sync",
+    "api/handoffs/proxy-notice",
+    "api/handoffs/registry-document",
+    "api/handoffs/scout-opportunity",
+    "api/inbox",
+    "api/posts/[id]",
+    "api/posts/[id]/approve",
+    "api/posts/[id]/reject",
+    "api/posts/[id]/revise",
+    "api/projects",
+    "api/schedules/[id]",
+    "api/schedules/[id]/approve",
+    "api/schedules/[id]/reject",
+    "api/schedules/[id]/revise",
+    "api/schedules/manage",
+    "api/schedules/propose-from-content",
+    "api/settings/repos",
+    "api/tasks",
+    "api/tasks/[id]/done",
+    "api/tasks/[id]/skip",
+    "api/tasks/manage",
+    "api/workspaces/api-key",
+    "api/workspaces/create",
+    "api/workspaces/features",
+    "api/workspaces/instructions",
+    "api/workspaces/invite",
+    "api/workspaces/style-preference",
+    "api/workspaces/styles",
+    "api/workspaces/styles/[id]",
+    "api/workspaces/switch",
+    "briefs",
+    "briefs/[id]",
+    "content",
+    "content/[id]",
+    "content/new",
+    "content/project-notes",
+    "dashboard",
+    "dashboard/audit",
+    "drafts/[id]",
+    "drafts/archive",
+    "drafts/new",
+    "forgot",
+    "inbox",
+    "inbox/archive",
+    "login",
+    "logout",
+    "posts/[id]",
+    "posts/archive",
+    "posts/new",
+    "projects",
+    "reset/[token]",
+    "schedules/[id]",
+    "schedules/archive",
+    "schedules/manage",
+    "settings",
+    "settings/integrations/github",
+    "tasks",
+    "tasks/archive",
+    "tasks/manage",
+    "workspaces"
+  ],
+  "desktopMenuLabels": [],
+  "desktopCommands": [
+    "load_shell_status",
+    "main",
+    "run"
+  ]
+}

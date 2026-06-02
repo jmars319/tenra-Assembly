@@ -1,0 +1,106 @@
+@media (max-width: 1120px) {
+  .shell,
+  .mainPanel {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    border-right: 0;
+    border-bottom: 1px solid #d9d2c7;
+  }
+
+  .itemList {
+    max-height: 240px;
+  }
+}
+
+@media (max-width: 720px) {
+  .sidebar,
+  .mainPanel {
+    padding: 14px;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  textarea {
+    min-height: 300px;
+  }
+}
+
+/* tenra.dev desktop palette */
+:root {
+  color-scheme: dark;
+  color: #f2f2f5;
+  background: #0f1015;
+}
+
+body,
+#root,
+.shell,
+.mainPanel {
+  background: #0f1015;
+  color: #f2f2f5;
+}
+
+.sidebar,
+.summaryGrid div,
+.itemButton,
+.editorPanel,
+.reviewPanel section,
+.markdownPreview,
+input,
+textarea,
+select {
+  border-color: #30323b;
+  background: #15161d;
+  color: #f2f2f5;
+}
+
+.brandBlock p,
+.panelCopy,
+.notice,
+.runtimeNote span,
+.summaryGrid span,
+.itemButton small,
+.issueList span,
+.detailList dt,
+.brandTag,
+.eyebrow,
+.panelHeader span,
+label {
+  color: #A0A0A0;
+}
+
+.toolbar button,
+.actionBar button {
+  border-color: #09A6D6;
+  background: #09A6D6;
+  color: #071015;
+}
+
+.actionBar button:nth-child(1),
+.actionBar button:nth-child(4),
+.actionBar button:nth-child(5),
+.actionBar button:nth-child(6) {
+  border-color: #30323b;
+  background: #202129;
+  color: #f2f2f5;
+}
+
+.itemButton:hover,
+.itemButtonActive {
+  border-color: rgba(9, 166, 214, 0.58);
+  background: #1a1b22;
+}
+
+.runtimeNote {
+  border-top-color: #30323b;
+}
+
+.issueList li {
+  background: rgba(160, 51, 42, 0.16);
+}
+
+/* JAMARQ/Tenra visual standard */

@@ -20,7 +20,7 @@ Purpose: provide a lean, implementable design plan and Prisma schema proposal fo
 - Invitations and revocations.
 - Feature flags enforced at API and hidden in UI.
 - AI instructions layered: global → workspace → user → style → request.
-- Per-workspace API key storage with usage caps scaffolding.
+- Per-workspace API key storage with usage cap enforcement.
 - Migration of existing single-tenant data into a default workspace.
 
 ## System Design (lean)

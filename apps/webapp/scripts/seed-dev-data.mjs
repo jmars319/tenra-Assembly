@@ -94,7 +94,7 @@ async function main() {
     where: { id: ids.brief },
     update: {
       summary:
-        "Internal brief: Assembly scaffolding updates are ready for review.\n" +
+        "Internal brief: Assembly workspace updates are ready for review.\n" +
         "What changed: new auth flow, API routes, and Prisma 7 config.\n" +
         "Why it matters: validates review workflow end-to-end for dogfooding.\n" +
         "Constraints: no external integrations, no automated posting, workspace-controlled access.",
@@ -104,7 +104,7 @@ async function main() {
       id: ids.brief,
       projectId: project.id,
       summary:
-        "Internal brief: Assembly scaffolding updates are ready for review.\n" +
+        "Internal brief: Assembly workspace updates are ready for review.\n" +
         "What changed: new auth flow, API routes, and Prisma 7 config.\n" +
         "Why it matters: validates review workflow end-to-end for dogfooding.\n" +
         "Constraints: no external integrations, no automated posting, workspace-controlled access.",

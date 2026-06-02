@@ -5,6 +5,8 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 # shellcheck source=./_common.sh
 source "$SCRIPT_DIR/_common.sh"
 
+export PRISMA_HIDE_UPDATE_MESSAGE=1
+
 ensure_repo_root
 require_pnpm
 require_workspace_install

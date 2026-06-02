@@ -1,0 +1,34 @@
+{
+  "label": "tenra-assembly",
+  "maxImplementationFileLines": 525,
+  "maxStyleFileLines": 400,
+  "maxAppShellLines": 500,
+  "maxDesktopMainLines": 450,
+  "maxDomainBarrelLines": 250,
+  "nearBudgetMarginLines": 25,
+  "nearBudgetMarginKb": 4,
+  "initialBundleBudgetKb": 230,
+  "requireBuiltAssets": true,
+  "appRouteRoot": "apps/webapp/app",
+  "contractSnapshotPath": "scripts/contracts/maintainability-contracts.json",
+  "assetDirs": [
+    "apps/desktopapp/dist/assets",
+    "apps/webapp/.next/static/chunks",
+    "apps/webapp/.next/static/chunks/app"
+  ],
+  "specificFileBudgets": {
+    "apps/webapp/app/content/new/ContentNewClient.tsx": 980,
+    "apps/webapp/lib/content/service.ts": 675,
+    "apps/webapp/app/briefs/BriefsClient.tsx": 675
+  },
+  "ignoredSegments": [],
+  "allowedGenerated": [
+    "src/vite-env.d.ts",
+    "src/atlasDesktop.d.ts",
+    "src/marketDeskDesktop.d.ts",
+    "apps/webapp/next-env.d.ts",
+    "apps/desktopapp/src/vite-env.d.ts",
+    "apps/webapp/src/vite-env.d.ts",
+    "apps/desktop/src/vite-env.d.ts"
+  ]
+}
