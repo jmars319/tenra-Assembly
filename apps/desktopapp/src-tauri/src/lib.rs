@@ -22,11 +22,7 @@ struct DesktopShellStatus {
 
 #[tauri::command]
 fn load_shell_status() -> DesktopShellStatus {
-    // Desktop command boundary for local services.
-    // Local persistence should move behind Rust-owned services:
-    // - SQLite for durable local state
-    // - OS keychain / secure enclave for secrets
-    // - background tasks and file access through explicit commands
+    // Keep IPC thin until SQLite, keychain, background work, and file access move behind Rust-owned services.
     DesktopShellStatus {
         product_name: "Assembly by Tenra",
         mode: "desktop-shell",

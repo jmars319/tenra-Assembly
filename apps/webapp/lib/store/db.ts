@@ -293,7 +293,7 @@ export const createDbStore = (workspaceId: string): StorageAdapter => ({
 
   async updateRepos(repos: RepoAccess[]) {
     const prisma = getPrismaClient();
-    // TODO: Replace full reset with targeted upserts once repo lifecycle is defined.
+    // Full reset avoids inventing merge semantics before repo lifecycle states are defined.
     await prisma.$transaction([
       prisma.repoAccess.deleteMany({ where: { workspaceId } }),
       prisma.repoAccess.createMany({ data: repos.map((repo) => ({

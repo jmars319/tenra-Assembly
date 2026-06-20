@@ -76,7 +76,7 @@ export default function NewPostClient({ briefs, repos, aiConfigured }: Props) {
           }
         }
       } catch {
-        // keep defaults
+        // Style presets are optional; the form defaults must remain usable without workspace data.
       }
     };
     void loadStyles();

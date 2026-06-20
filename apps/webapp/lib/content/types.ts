@@ -1,4 +1,2 @@
-// Temporary monorepo shim.
-// Keep existing webapp imports stable while the source of truth lives in packages/shared-types.
-// Do not add web-only logic here.
+// Keep legacy webapp imports stable while shared-types owns content contracts.
 export * from "@assembly/shared-types/content";

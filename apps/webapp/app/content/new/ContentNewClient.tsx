@@ -131,7 +131,7 @@ export default function ContentNewClient() {
           }
         }
       } catch {
-        // keep defaults
+        // Style presets are optional; the form defaults must remain usable without workspace data.
       }
     };
     void loadStyles();

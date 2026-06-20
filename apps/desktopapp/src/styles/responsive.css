@@ -29,7 +29,6 @@
   }
 }
 
-/* tenra.dev desktop palette */
 :root {
   color-scheme: dark;
   color: #f2f2f5;
@@ -102,5 +101,3 @@ label {
 .issueList li {
   background: rgba(160, 51, 42, 0.16);
 }
-
-/* JAMARQ/Tenra visual standard */

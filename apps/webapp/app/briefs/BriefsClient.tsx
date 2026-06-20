@@ -101,7 +101,7 @@ export default function BriefsClient({ briefs, projects, repos }: Props) {
           }
         }
       } catch {
-        // keep defaults
+        // Style presets are optional; the form defaults must remain usable without workspace data.
       }
     };
     void loadStyles();

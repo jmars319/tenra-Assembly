@@ -16,7 +16,6 @@ pre {
     "Courier New", monospace;
 }
 
-/* JAMARQ/Tenra visual standard */
 :root {
   color-scheme: dark;
   --jamarq-canvas: #0D0D0F;
@@ -77,4 +76,3 @@ a:focus-visible {
 [class*="summary"] {
   color: var(--jamarq-muted);
 }
-

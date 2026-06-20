@@ -239,7 +239,7 @@ export const fetchDocumentation = async (installationId: number, fullName: strin
       if (Array.isArray(entry)) continue;
       if (entry?.content) addDoc(candidate, entry);
     } catch {
-      // ignore missing changelog
+      // Missing optional changelogs should not block evidence collection.
     }
   }
 
@@ -266,7 +266,7 @@ export const fetchDocumentation = async (installationId: number, fullName: strin
   try {
     await walkDocs("docs");
   } catch {
-    // ignore missing docs folder
+    // Missing optional docs should not block evidence collection.
   }
 
   return docs.slice(0, MAX_DOC_FILES);
