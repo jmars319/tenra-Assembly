@@ -12,6 +12,7 @@ import { ContentNewDraftPanel } from "./ContentNewDraftPanel";
 import { ContentStructuredSections } from "./ContentStructuredSections";
 import type { GeneratedDraft, StyleOption } from "./ContentNewTypes";
 
+// Content creation state boundary
 export default function ContentNewClient() {
   const [type, setType] = useState("FIELD_NOTE");
   const [status, setStatus] = useState("DRAFT");
@@ -61,6 +62,7 @@ export default function ContentNewClient() {
     return fetch(url, { ...init, headers });
   }, []);
 
+  // Feedback routing boundary
   const resetFeedback = () => {
     setErrors([]);
     setWarnings([]);
@@ -81,6 +83,7 @@ export default function ContentNewClient() {
     }
   };
 
+  // Workspace style boundary
   useEffect(() => {
     const loadStatus = async () => {
       try {
@@ -137,6 +140,7 @@ export default function ContentNewClient() {
     void loadStyles();
   }, [apiFetch]);
 
+  // Draft persistence boundary
   const handleCreate = async () => {
     resetFeedback();
     const payload: Record<string, unknown> = {
@@ -225,6 +229,7 @@ export default function ContentNewClient() {
     setSuccess("Upload processed.");
   };
 
+  // AI draft boundary
   const handleGenerateDraft = async () => {
     resetFeedback();
     if (!aiAvailable) {
@@ -258,7 +263,7 @@ export default function ContentNewClient() {
       setGenerating(false);
     }
   };
-
+  // Project note import boundary
   const handleProjectNotesImport = async () => {
     resetFeedback();
     const res = await apiFetch("/api/content/project-notes/import", {
@@ -301,6 +306,7 @@ export default function ContentNewClient() {
     return { fieldErrors, fieldWarnings };
   };
 
+  // Content form boundary
   return (
     <div className="flex flex-col gap-6">
       <ContentNewDetailsSection

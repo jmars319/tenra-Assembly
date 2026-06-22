@@ -43,6 +43,7 @@ type ProxyAttempt = {
   message?: string;
 };
 
+// Handoff inbox boundary
 export default function RegistryHandoffInbox() {
   const [payload, setPayload] = useState("");
   const [busy, setBusy] = useState(false);
@@ -56,6 +57,7 @@ export default function RegistryHandoffInbox() {
   const [scoutPreview, setScoutPreview] = useState<ScoutOpportunityPreview | null>(null);
   const [incomingOpportunities, setIncomingOpportunities] = useState<IncomingOpportunity[]>([]);
 
+  // Handoff import boundary
   const importHandoffRequest = async (source: HandoffSource) => {
     setBusy(true);
     setCreated(null);
@@ -100,6 +102,7 @@ export default function RegistryHandoffInbox() {
     }
   };
 
+  // Scout preview boundary
   const previewScoutOpportunity = async () => {
     setBusy(true);
     setCreated(null);
@@ -157,6 +160,7 @@ export default function RegistryHandoffInbox() {
     }
   };
 
+  // Proxy export boundary
   const exportProxyHandoff = async (deliver = false) => {
     if (!created?.id) return;
     setBusy(true);
@@ -194,6 +198,7 @@ export default function RegistryHandoffInbox() {
     }
   };
 
+  // Handoff inbox surface
   return (
     <section className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
       <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">

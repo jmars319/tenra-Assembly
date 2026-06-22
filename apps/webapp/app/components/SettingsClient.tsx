@@ -59,6 +59,7 @@ const defaultInstructions: BrandInstruction[] = [
   },
 ];
 
+// Workspace defaults contract
 const emptyWorkspaceInstruction: WorkspaceInstructionForm = {
   tone: "",
   voice: "",
@@ -93,6 +94,7 @@ const mapInstructionToStyle = (entry: BrandInstruction) => ({
   },
 });
 
+// Workspace settings boundary
 export default function SettingsClient({
   repos,
   role,
@@ -120,7 +122,7 @@ export default function SettingsClient({
   const [apiKeySaveState, setApiKeySaveState] = useState<SaveState>("idle");
   const [defaultStyleId, setDefaultStyleId] = useState<string>("");
   const [preferenceSaveState, setPreferenceSaveState] = useState<SaveState>("idle");
-
+  // Settings load boundary
   useEffect(() => {
     const load = async () => {
       try {
@@ -179,7 +181,7 @@ export default function SettingsClient({
 
     void load();
   }, []);
-
+  // Workspace save boundary
   const saveWorkspaceInstruction = async () => {
     if (!canManage) return;
     setInstructionSaveState("idle");
@@ -194,7 +196,6 @@ export default function SettingsClient({
       setInstructionSaveState("error");
     }
   };
-
   const save = async () => {
     if (!canManage) return;
     try {
@@ -219,13 +220,11 @@ export default function SettingsClient({
       setSaveState("error");
     }
   };
-
   const reset = () => {
     if (!canManage) return;
     setInstructions(defaultInstructions);
     setSaveState("idle");
   };
-
   const saveFeatures = async () => {
     if (!canManage) return;
     try {
@@ -299,6 +298,7 @@ export default function SettingsClient({
     }
   };
 
+  // Derived option boundary
   const brandOptions = useMemo(
     () => Array.from(new Set(instructions.map((item) => item.tag).filter(Boolean))),
     [instructions],
@@ -314,6 +314,7 @@ export default function SettingsClient({
     return [...presetOptions, ...custom];
   }, [styles]);
 
+  // Settings panel boundary
   return (
     <div className="grid gap-6">
       <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">

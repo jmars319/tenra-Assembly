@@ -42,6 +42,7 @@ type CreateContentInput = {
   format?: "json" | "md";
 };
 
+// Content persistence contract
 export const createContentItem = async (
   workspaceId: string,
   input: CreateContentInput,
@@ -60,6 +61,7 @@ export const createContentItem = async (
   const rawInput = input.rawInput ?? null;
   let validation: ValidationSummary | null = null;
 
+  // Normalization boundary
   const applyValidation = (result: ValidationSummary, normalizedBody?: string) => {
     validation = result;
     if (result.normalized && input.type === "FIELD_NOTE") {
@@ -112,6 +114,7 @@ export const createContentItem = async (
     if (normalizedBody) body = normalizedBody;
   };
 
+  // Validation routing boundary
   if (input.type === "FIELD_NOTE") {
     const result = validateFieldNotesCreate(rawInput || body || "");
     structured = result.normalized ?? null;
@@ -197,6 +200,7 @@ export const createContentItem = async (
     return { ok: false, validation: validationResult };
   }
 
+  // Promotion gate boundary
   if ((status === "READY" || status === "APPROVED") && validationResult.ok) {
     const strict = await validatePromotion({
       type: input.type,
@@ -235,6 +239,7 @@ export const createContentItem = async (
   return { ok: true, item: created, validation: validationResult };
 };
 
+// Content query boundary
 export const listContentItems = async (
   workspaceId: string,
   filters: { type?: ContentType; status?: ContentStatus },
@@ -297,6 +302,7 @@ export const updateContentItem = async (
   return { ok: true, item: updated, validation: { ok: true, errors: [], warnings: [] } };
 };
 
+// Status transition boundary
 export const updateContentStatus = async (
   workspaceId: string,
   id: string,

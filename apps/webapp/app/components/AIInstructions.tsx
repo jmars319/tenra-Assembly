@@ -24,6 +24,7 @@ type ModalState = {
   dontList: string;
 } | null;
 
+// Brand tag boundary
 const normalizeTag = (value: string) =>
   value
     .trim()
@@ -31,6 +32,7 @@ const normalizeTag = (value: string) =>
     .replace(/[^A-Z0-9]+/g, "_")
     .replace(/^_+|_+$/g, "");
 
+// Instruction editor boundary
 export default function AIInstructions({
   instructions,
   onChange,
@@ -90,6 +92,7 @@ export default function AIInstructions({
     setModal(null);
   };
 
+  // Modal validation boundary
   const modalDuplicate = modal
     ? instructions.some((item) => item.tag === normalizeTag(modal.tag) && item.id !== modal.id)
     : false;
@@ -99,6 +102,7 @@ export default function AIInstructions({
 
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
+      {/* Instruction list boundary */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="text-sm font-semibold text-slate-200">AI instructions</div>
@@ -175,6 +179,7 @@ export default function AIInstructions({
         {saveState === "error" ? "Save failed." : null}
       </div>
 
+      {/* Edit modal boundary */}
       {modal ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
           <div className="w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-950 p-5">

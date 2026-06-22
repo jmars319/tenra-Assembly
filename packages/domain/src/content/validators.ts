@@ -17,6 +17,7 @@ import {
   parseSystemsMemoMarkdown,
 } from "./parsers";
 
+// Validation issue contract
 const issue = (code: string, message: string, hint?: string, field?: string): ValidationIssue => ({
   code,
   message,
@@ -24,6 +25,7 @@ const issue = (code: string, message: string, hint?: string, field?: string): Va
   field,
 });
 
+// Field note validation boundary
 export const validateFieldNotesCreate = (input: string): ValidationSummary<{ bullets: string[] }> => {
   const normalizedText = normalizeBulletText(input);
   const bullets = parseBullets(normalizedText);
@@ -74,6 +76,7 @@ export const validateFieldNotesPromote = (input: string): ValidationSummary<{ bu
   return { ok: errors.length === 0, errors, warnings, normalized: { bullets } };
 };
 
+// Systems memo validation boundary
 export const validateSystemsMemoCreate = (
   input: string,
   format: "json" | "md",
@@ -147,6 +150,7 @@ export const validateSystemsMemoPromote = (
   return { ok: errors.length === 0, errors, warnings, normalized: memo ?? undefined };
 };
 
+// Blog feature validation boundary
 export const validateBlogFeatureCreate = (input: string): ValidationSummary<BlogFeature> => {
   const errors: ValidationIssue[] = [];
   const warnings: ValidationIssue[] = [];
@@ -200,6 +204,7 @@ export const validateBlogFeaturePromote = (input: string): ValidationSummary<Blo
   return { ok: errors.length === 0, errors, warnings, normalized: parsed };
 };
 
+// Structured content boundary
 export const validateProjectNoteRowCreate = (row: ProjectNoteRow): ValidationSummary<ProjectNoteRow> => {
   const errors: ValidationIssue[] = [];
   const warnings: ValidationIssue[] = [];
@@ -250,6 +255,7 @@ export const validateChangeLogPromote = (entry: ChangeLogEntry): ValidationSumma
   return { ok: errors.length === 0, errors, warnings, normalized: entry };
 };
 
+// Promotion routing boundary
 export const getPromotionIssuesForItem = (input: {
   type: ContentType;
   rawInput?: string | null;
@@ -323,6 +329,7 @@ export const validateDecisionPromote = (entry: DecisionRecord): ValidationSummar
   return { ok: errors.length === 0, errors, warnings, normalized: entry };
 };
 
+// Signal log boundary
 export const validateSignalCreate = (entry: SignalLogEntry): ValidationSummary<SignalLogEntry> => {
   const errors: ValidationIssue[] = [];
   const warnings: ValidationIssue[] = [];
@@ -346,6 +353,7 @@ export const validateSignalPromote = (entry: SignalLogEntry): ValidationSummary<
   return { ok: errors.length === 0, errors, warnings, normalized: entry };
 };
 
+// Project notes CSV boundary
 export const validateProjectNotesCsv = (csvText: string) => {
   const rows = parseProjectNoteRows(csvText);
   const rowIssues: Array<{ row: number; errors: ValidationIssue[] }> = [];

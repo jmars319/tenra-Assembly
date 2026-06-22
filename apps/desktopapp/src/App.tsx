@@ -26,6 +26,7 @@ import {
 } from "./App.workbench";
 import "./App.css";
 
+// Desktop workbench boundary
 function App() {
   const importInputRef = useRef<HTMLInputElement>(null);
   const [items, setItems] = useState<AssemblyItem[]>(loadItems);
@@ -35,7 +36,7 @@ function App() {
   const [shellError, setShellError] = useState<string | null>(null);
   const [notice, setNotice] = useState("Local desktop workbench ready.");
   const [isStoreReady, setIsStoreReady] = useState(false);
-
+  // Desktop store boundary
   useEffect(() => {
     let cancelled = false;
 
@@ -69,7 +70,7 @@ function App() {
       cancelled = true;
     };
   }, []);
-
+  // Store write boundary
   useEffect(() => {
     if (!isStoreReady) return;
 
@@ -77,7 +78,6 @@ function App() {
       setNotice(error instanceof Error ? error.message : "Desktop store write failed.");
     });
   }, [isStoreReady, items]);
-
   useEffect(() => {
     let cancelled = false;
 
@@ -95,7 +95,6 @@ function App() {
       cancelled = true;
     };
   }, []);
-
   const activeItem = items.find((item) => item.id === activeId) ?? items[0] ?? newItem();
   const activeIssues = useMemo(() => promotionIssuesForItem(activeItem), [activeItem]);
   const canPromote = activeIssues.length === 0;
@@ -115,7 +114,7 @@ function App() {
     if (filter === "approved") return item.status === "APPROVED";
     return item.status !== "ARCHIVED";
   });
-
+  // Workbench mutation boundary
   const updateActiveItem = (updates: Partial<AssemblyItem>) => {
     const updatedAt = nowIso();
     setItems((current) =>
@@ -186,6 +185,7 @@ function App() {
     setNotice("Item moved to rejected.");
   };
 
+  // Local export boundary
   const copyMarkdown = async () => {
     try {
       await navigator.clipboard.writeText(markdown);
@@ -245,6 +245,7 @@ function App() {
     }
   };
 
+  // Desktop shell boundary
   return (
     <div className="shell">
       <aside className="sidebar">

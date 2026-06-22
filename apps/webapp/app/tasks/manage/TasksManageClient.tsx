@@ -8,6 +8,7 @@ type Props = {
   projects: Project[];
 };
 
+// Task workspace boundary
 export default function TasksManageClient({ tasks, projects }: Props) {
   const [items, setItems] = useState<Task[]>(tasks);
   const [projectId, setProjectId] = useState(projects[0]?.id ?? "");
@@ -21,6 +22,7 @@ export default function TasksManageClient({ tasks, projects }: Props) {
   const [state, setState] = useState<"idle" | "saving" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
 
+  // AI readiness boundary
   useEffect(() => {
     const loadStatus = async () => {
       try {
@@ -34,6 +36,7 @@ export default function TasksManageClient({ tasks, projects }: Props) {
     void loadStatus();
   }, []);
 
+  // Task persistence boundary
   const submit = async () => {
     setState("saving");
     setError(null);
@@ -81,6 +84,7 @@ export default function TasksManageClient({ tasks, projects }: Props) {
     setState("idle");
   };
 
+  // Task suggestion boundary
   const suggestTask = async () => {
     setAiError(null);
     if (!aiPrompt.trim()) {
@@ -125,6 +129,7 @@ export default function TasksManageClient({ tasks, projects }: Props) {
 
   return (
     <div className="grid gap-6">
+      {/* Task form boundary */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
         <div className="text-sm font-semibold text-slate-200">Create task</div>
         <div className="mt-3 rounded-xl border border-slate-800 bg-slate-950/60 p-4">
@@ -211,6 +216,7 @@ export default function TasksManageClient({ tasks, projects }: Props) {
         </div>
       </div>
 
+      {/* Task list boundary */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
         <div className="text-sm font-semibold text-slate-200">All tasks</div>
         <div className="mt-4 grid gap-3">

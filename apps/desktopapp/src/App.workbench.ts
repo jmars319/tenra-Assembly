@@ -11,6 +11,7 @@ import {
 } from "@assembly/shared-types/content";
 import { getStylePreset, stylePresets } from "@assembly/shared-types/style";
 
+// Workbench type contract
 export type AssemblyItem = {
   id: string;
   title: string;
@@ -34,6 +35,7 @@ export type WorkbenchExport = {
 
 export const storageKey = "tenra-assembly-desktop-workbench:v1";
 
+// Template fixture boundary
 export const templates: Record<ContentType, string> = {
   FIELD_NOTE: "- What happened\n- Why it matters\n- Follow-up or next action",
   PROJECT_NOTE:
@@ -189,6 +191,7 @@ export const parseKeyValueDraft = (text: string) => {
   return values;
 };
 
+// Structured payload boundary
 export const structuredPayloadForItem = (item: AssemblyItem): unknown => {
   const fields = parseKeyValueDraft(item.rawInput);
 
@@ -266,6 +269,7 @@ export const isAssemblyItem = (value: unknown): value is AssemblyItem => {
   );
 };
 
+// Workbench payload boundary
 export const parseWorkbenchImport = (input: unknown): AssemblyItem[] => {
   const items = Array.isArray(input)
     ? input
@@ -288,6 +292,7 @@ export const formatShortDate = (iso: string) =>
     minute: "2-digit",
   }).format(new Date(iso));
 
+// Markdown export boundary
 export const toMarkdown = (item: AssemblyItem) => {
   const preset = getStylePreset(item.styleId);
   const instructions = buildInstructionBlock({

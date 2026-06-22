@@ -13,6 +13,7 @@ const repoRoot = path.resolve(__dirname, "..");
 const envPath = path.join(repoRoot, ".env");
 const envLocalPath = path.join(repoRoot, ".env.local");
 
+// Env guard boundary
 if (existsSync(envPath)) {
   config({ path: envPath });
 }
@@ -40,6 +41,7 @@ const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
 
 const now = new Date();
 
+// Content fixture boundary
 const seedItems = [
   {
     id: "content-field-note-001",
@@ -214,6 +216,7 @@ const seedItems = [
   },
 ];
 
+// Seed upsert boundary
 const upsertContentItem = async (item) => {
   await prisma.contentItem.upsert({
     where: { id: item.id },

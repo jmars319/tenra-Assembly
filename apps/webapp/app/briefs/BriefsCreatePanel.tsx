@@ -9,6 +9,7 @@ type StyleOption = {
 
 type ScopeMode = "AUTO" | "FULL" | "DAYS" | "COMMITS";
 
+// Brief creation surface
 export function BriefsCreatePanel({
   aiConfigured,
   commitWindowPage,
@@ -106,6 +107,7 @@ export function BriefsCreatePanel({
 }) {
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
+      {/* Manual brief boundary */}
       <div className="text-sm font-semibold text-slate-200">Create brief</div>
       <div className="mt-4 grid gap-4 md:grid-cols-[0.45fr_1fr]">
         <div className="grid gap-4">
@@ -150,6 +152,7 @@ export function BriefsCreatePanel({
           />
         </label>
       </div>
+      {/* Evidence capture boundary */}
       <div className="mt-4 rounded-xl border border-slate-800 bg-slate-950/60 p-4">
         <div className="text-xs uppercase tracking-wide text-slate-500">Suggest from repo</div>
         <label className="mt-3 grid gap-2 text-xs text-slate-400">
@@ -271,6 +274,7 @@ export function BriefsCreatePanel({
           <div className="mt-2 text-xs text-slate-500">Evidence bundle: {evidenceBundleId}</div>
         ) : null}
       </div>
+      {/* General prompt boundary */}
       <div className="mt-4 rounded-xl border border-slate-800 bg-slate-950/60 p-4">
         <div className="text-xs uppercase tracking-wide text-slate-500">Suggest from text</div>
         <label className="mt-3 grid gap-2 text-xs text-slate-400">
@@ -311,6 +315,7 @@ export function BriefsCreatePanel({
           ) : null}
         </div>
       </div>
+      {/* Brief save boundary */}
       <div className="mt-4 flex items-center gap-3">
         <button
           onClick={() => void submit()}

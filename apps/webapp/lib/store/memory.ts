@@ -27,6 +27,7 @@ type MemoryData = {
   auditLogs: AuditLog[];
 };
 
+// Memory fixture boundary
 const seedData = (): MemoryData => {
   const createdAt = nowIso();
   const posts: Post[] = [
@@ -215,6 +216,7 @@ const seedData = (): MemoryData => {
 
 const data = seedData();
 
+// In-memory audit boundary
 const addAuditLog = (entry: Omit<AuditLog, "id" | "createdAt">) => {
   data.auditLogs.unshift({
     id: randomUUID(),
@@ -223,6 +225,7 @@ const addAuditLog = (entry: Omit<AuditLog, "id" | "createdAt">) => {
   });
 };
 
+// Adapter contract boundary
 export const createMemoryStore = (_workspaceId: string): StorageAdapter => {
   void _workspaceId;
   return {
@@ -264,6 +267,7 @@ export const createMemoryStore = (_workspaceId: string): StorageAdapter => {
     return data.posts.find((post) => post.id === id) ?? null;
   },
 
+  // Status mutation boundary
   async updatePostStatus(id: string, status: PostStatus, note?: string) {
     const post = data.posts.find((item) => item.id === id);
     if (!post) return null;
@@ -323,6 +327,7 @@ export const createMemoryStore = (_workspaceId: string): StorageAdapter => {
     return data.repos;
   },
 
+  // Settings store boundary
   async updateRepos(repos: RepoAccess[]) {
     data.repos = repos;
     addAuditLog({

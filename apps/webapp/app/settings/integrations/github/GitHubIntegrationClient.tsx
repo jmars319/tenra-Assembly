@@ -26,6 +26,7 @@ type Repo = {
 
 const internalRepoNames = new Set(["jmars319/assembly", "jason_marshall/ledger"]);
 
+// GitHub integration boundary
 export default function GitHubIntegrationClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -42,6 +43,7 @@ export default function GitHubIntegrationClient() {
   const errorNotice = searchParams.get("error");
   const installationIdParam = searchParams.get("installation_id");
 
+  // Repository sync boundary
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -74,6 +76,7 @@ export default function GitHubIntegrationClient() {
     }
   }, []);
 
+  // Installation callback boundary
   useEffect(() => {
     void load();
   }, [load]);
@@ -101,6 +104,7 @@ export default function GitHubIntegrationClient() {
     void complete();
   }, [installationIdParam, router, load]);
 
+  // Repository selection boundary
   const toggleRepo = (repoId: number) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
@@ -167,6 +171,7 @@ export default function GitHubIntegrationClient() {
 
   return (
     <div className="grid gap-6">
+      {/* Connection status boundary */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -222,6 +227,7 @@ export default function GitHubIntegrationClient() {
         ) : null}
       </div>
 
+      {/* Repository access boundary */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>

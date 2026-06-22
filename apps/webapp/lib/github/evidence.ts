@@ -37,6 +37,7 @@ const MAX_ITEMS = 500;
 const MAX_DOC_FILES = 12;
 const MAX_DOC_CHARS = 20000;
 
+// GitHub payload contract
 const toIso = (value?: string) => (value ? new Date(value).toISOString() : new Date().toISOString());
 
 const truncateText = (value: string, limit: number) =>
@@ -82,6 +83,7 @@ const fetchReadme = async (installationId: number, fullName: string) => {
   return data;
 };
 
+// Commit evidence boundary
 export const fetchCommits = async (
   installationId: number,
   fullName: string,
@@ -138,6 +140,7 @@ export const fetchCommits = async (
   }));
 };
 
+// Pull request evidence boundary
 export const fetchPullRequests = async (installationId: number, fullName: string, since?: string) => {
   const [owner, repo] = fullName.split("/");
   const pulls: PullPayload[] = [];
@@ -170,6 +173,7 @@ export const fetchPullRequests = async (installationId: number, fullName: string
   }));
 };
 
+// Release evidence boundary
 export const fetchReleases = async (installationId: number, fullName: string, since?: string) => {
   const [owner, repo] = fullName.split("/");
   const releases: ReleasePayload[] = [];
@@ -202,6 +206,7 @@ export const fetchReleases = async (installationId: number, fullName: string, si
   }));
 };
 
+// Documentation crawl boundary
 export const fetchDocumentation = async (installationId: number, fullName: string) => {
   const docs: Array<{
     type: "DOCUMENTATION";

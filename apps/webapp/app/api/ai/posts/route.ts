@@ -23,6 +23,7 @@ type Platform =
   | "snapchat"
   | "generic";
 
+// Platform contract boundary
 const normalizePlatform = (value?: string): Platform => {
   switch ((value ?? "").toLowerCase()) {
     case "twitter":
@@ -63,6 +64,7 @@ const normalizePlatform = (value?: string): Platform => {
 };
 
 export async function POST(request: Request) {
+  // AI provider boundary
   if (process.env.STORAGE_MODE !== "db") {
     return NextResponse.json({ error: "AI posts require STORAGE_MODE=db." }, { status: 400 });
   }
@@ -78,6 +80,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "AI assist not configured." }, { status: 400 });
   }
 
+  // Request validation boundary
   const body = await request.json();
   if (!body?.briefId || typeof body.briefId !== "string") {
     return NextResponse.json({ error: "briefId is required." }, { status: 400 });
@@ -124,6 +127,7 @@ export async function POST(request: Request) {
       );
     }
 
+    // Evidence assembly boundary
     const evidenceDocs = brief.evidenceBundleId
       ? await prisma.evidenceItem.findMany({
           where: { bundleId: brief.evidenceBundleId, type: "DOCUMENTATION", workspaceId: context.workspaceId },
@@ -176,6 +180,7 @@ export async function POST(request: Request) {
       )
     );
 
+    // Post transaction boundary
     const posts = await prisma.$transaction(async (tx) => {
       const createdPosts = await Promise.all(
         platforms.map((platform, index) =>

@@ -13,6 +13,7 @@ const repoRoot = path.resolve(__dirname, "..");
 const envPath = path.join(repoRoot, ".env");
 const envLocalPath = path.join(repoRoot, ".env.local");
 
+// Env guard boundary
 if (existsSync(envPath)) {
   config({ path: envPath });
 }
@@ -41,6 +42,7 @@ const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
 const daysAgo = (days) => new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 const daysAhead = (days) => new Date(Date.now() + days * 24 * 60 * 60 * 1000);
 
+// Seed identity boundary
 const ids = {
   project: "project-assembly-internal",
   brief: "brief-assembly-internal",
@@ -112,6 +114,7 @@ async function main() {
     },
   });
 
+  // Post fixture boundary
   const postData = [
     {
       id: ids.posts[0],
@@ -183,6 +186,7 @@ async function main() {
     },
   });
 
+  // Schedule fixture boundary
   const scheduleItems = [
     {
       id: ids.scheduleItems[0],
@@ -245,6 +249,7 @@ async function main() {
     },
   });
 
+  // Audit fixture boundary
   const auditEntries = [
     {
       id: ids.auditLogs[0],

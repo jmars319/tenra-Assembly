@@ -1,5 +1,6 @@
 import type { BlogFeature, ProjectNoteRow, SystemsMemo } from "@assembly/shared-types/content";
 
+// CSV parser boundary
 const splitCsvLine = (line: string) => {
   const values: string[] = [];
   let current = "";
@@ -66,6 +67,7 @@ export const parseProjectNoteRows = (text: string): ProjectNoteRow[] => {
   }));
 };
 
+// Memo parser boundary
 export const parseSystemsMemoMarkdown = (input: string): SystemsMemo => {
   const lines = input.split(/\r?\n/);
   let section: "thesis" | "points" | "example" | "takeaway" | null = null;
@@ -119,6 +121,7 @@ export const parseSystemsMemoMarkdown = (input: string): SystemsMemo => {
   return memo;
 };
 
+// Bullet normalization boundary
 export const parseBullets = (text: string) =>
   text
     .split(/\r?\n/)
@@ -137,6 +140,7 @@ export const normalizeBulletText = (input: string) => {
   return chunks.map((chunk) => `- ${chunk}`).join("\n");
 };
 
+// Frontmatter parser boundary
 export const parseFrontmatterLoose = (input: string): BlogFeature => {
   const trimmed = input.trim();
   if (!trimmed.startsWith("---")) {

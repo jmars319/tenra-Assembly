@@ -18,6 +18,7 @@ type StyleOption = {
   source: "preset" | "workspace";
 };
 
+// Post generation state boundary
 export default function NewPostClient({ briefs, repos, aiConfigured }: Props) {
   const router = useRouter();
   const [mode, setMode] = useState<"single" | "multi">("single");
@@ -41,6 +42,7 @@ export default function NewPostClient({ briefs, repos, aiConfigured }: Props) {
   const [state, setState] = useState<"idle" | "submitting" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
 
+  // Style preference boundary
   useEffect(() => {
     const loadStyles = async () => {
       try {
@@ -82,6 +84,7 @@ export default function NewPostClient({ briefs, repos, aiConfigured }: Props) {
     void loadStyles();
   }, []);
 
+  // Selection model boundary
   const brandOptions = useMemo(
     () => Array.from(new Set(repos.map((repo) => repo.projectTag).filter(Boolean))),
     [repos]
@@ -133,6 +136,7 @@ export default function NewPostClient({ briefs, repos, aiConfigured }: Props) {
     });
   };
 
+  // Generation request boundary
   const submit = async () => {
     setState("submitting");
     setError(null);
@@ -212,6 +216,7 @@ export default function NewPostClient({ briefs, repos, aiConfigured }: Props) {
     setState("idle");
   };
 
+  // Post form boundary
   return (
     <div className="grid gap-6">
       {briefs.length === 0 ? (

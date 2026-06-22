@@ -24,6 +24,7 @@ import {
   TaskStatus,
 } from "./types";
 
+// Prisma mapping boundary
 const mapPost = (post: PrismaPost): Post => ({
   id: post.id,
   projectId: post.projectId,
@@ -89,6 +90,7 @@ const mapBrief = (brief: PrismaBrief) => ({
   createdAt: brief.createdAt.toISOString(),
 });
 
+// Audit persistence boundary
 const createAuditLog = async (
   workspaceId: string,
   entry: Omit<AuditLog, "id" | "createdAt">,
@@ -108,7 +110,9 @@ const createAuditLog = async (
   });
 };
 
+// Adapter contract boundary
 export const createDbStore = (workspaceId: string): StorageAdapter => ({
+  // Dashboard read boundary
   async getDashboard(): Promise<DashboardSummary> {
     const prisma = getPrismaClient();
     const [postsReady, schedulesReady, tasksDue, recentAudit] = await Promise.all([
@@ -191,6 +195,7 @@ export const createDbStore = (workspaceId: string): StorageAdapter => ({
     return post ? mapPost(post) : null;
   },
 
+  // Status mutation boundary
   async updatePostStatus(id: string, status: PostStatus, note?: string) {
     const prisma = getPrismaClient();
     const existing = await prisma.post.findFirst({ where: { id, workspaceId } });
@@ -291,6 +296,7 @@ export const createDbStore = (workspaceId: string): StorageAdapter => ({
     return repos.map(mapRepo);
   },
 
+  // Repo access reset boundary
   async updateRepos(repos: RepoAccess[]) {
     const prisma = getPrismaClient();
     // Full reset avoids inventing merge semantics before repo lifecycle states are defined.

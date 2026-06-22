@@ -13,6 +13,7 @@ type Props = {
   repos: RepoAccess[];
 };
 
+// Brief workspace boundary
 export default function BriefsClient({ briefs, projects, repos }: Props) {
   const [items, setItems] = useState<Brief[]>(briefs);
   const [projectId, setProjectId] = useState(projects[0]?.id ?? "");
@@ -53,6 +54,7 @@ export default function BriefsClient({ briefs, projects, repos }: Props) {
   const [activeSummary, setActiveSummary] = useState<string | null>(null);
   const [aiConfigured, setAiConfigured] = useState<boolean | null>(null);
 
+  // AI readiness boundary
   useEffect(() => {
     const loadStatus = async () => {
       try {
@@ -66,6 +68,7 @@ export default function BriefsClient({ briefs, projects, repos }: Props) {
     void loadStatus();
   }, []);
 
+  // Style preference boundary
   useEffect(() => {
     const loadStyles = async () => {
       try {
@@ -107,6 +110,7 @@ export default function BriefsClient({ briefs, projects, repos }: Props) {
     void loadStyles();
   }, []);
 
+  // Brief persistence boundary
   const submit = async () => {
     setState("saving");
     setError(null);
@@ -166,6 +170,7 @@ export default function BriefsClient({ briefs, projects, repos }: Props) {
     setItems((prev) => prev.filter((brief) => brief.id !== id));
   };
 
+  // Evidence capture boundary
   const suggestBrief = async () => {
     setSuggestState("loading");
     setSuggestError(null);
@@ -279,6 +284,7 @@ export default function BriefsClient({ briefs, projects, repos }: Props) {
     setGeneralSuggestState("idle");
   };
 
+  // Brief list boundary
   const filteredBriefs = items.filter((brief) => {
     const isRepoSpecific = Boolean(brief.sourceRepoId || brief.evidenceBundleId);
     if (filterScope === "general" && isRepoSpecific) return false;
